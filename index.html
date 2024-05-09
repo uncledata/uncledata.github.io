@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <title>Uncle Data</title>
   <style>
     body {
@@ -17,14 +18,15 @@
       width: 500px;
       height: 500px;
     }
-
     #logos-container {
       display: flex;
       justify-content: center;
       margin-top: 50px;
     }
-
     .logo-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
       margin-right: 20px;
     }
@@ -32,7 +34,9 @@
     .logo-item img {
       width: 100px;
       height: 100px;
+      object-fit: contain;
     }
+
   </style>
 </head>
 <body>
@@ -59,6 +63,11 @@
       <a href="https://podcasters.spotify.com/pod/show/duomenu-dede">
         <img src="images/spotify.png" alt="Spotify">
       </a>
+    </div>
+     <div class="logo-item">
+        <a href="about.html">
+            <img src="images/Resume.png" alt="Resume">
+        </a>
     </div>
   </div>
 </body>

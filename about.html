@@ -1,27 +1,181 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>About Me</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f5cdb8;
-    }
-
-    h1 {
-      margin-top: 50px;
-    }
-
-    .content {
-      margin-top: 50px;
-    }
-  </style>
+    <title>My Resume</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            width: 210mm; /* A4 width */
+            max-width: 100%;
+            box-sizing: border-box;
+            border-bottom: 1px solid #333; /* Visible divider */
+            padding-bottom: 20px; /* Spacing */
+        }
+        .header-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 50%;
+            position: relative; /* Added for the pseudo-element */
+        }
+        .header-section:first-child {
+            align-items: center; /* Center alignment for the first child */
+            margin-right: 20px; /* Spacing */
+        }
+        .header-section:first-child::after {
+            content: "";
+            position: absolute;
+            right: -10px; /* Position the divider */
+            top: 0;
+            bottom: 0;
+            width: 1px; /* Width of the divider */
+            background-color: #ffffff; /* Color of the divider */
+        }
+        .header-section:last-child {
+            align-items: flex-start; /* Left alignment for the last child */
+        }
+        .header img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%; /* Make the photo round */
+        }
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the left */
+        }
+        .header-info p {
+            margin-top: -10px; /* Move closer to the name */
+            font-size: 1.2em; /* Make it a bit larger */
+        }
+        h1 {
+            font-size: 2.5em; /* Make the name larger */
+        }
+        #logos-container {
+            display: flex;
+            justify-content: flex-start; /* Align items to the left */
+            gap: 10px;
+        }
+        .logo-item img {
+            width: 30px;
+            height: 30px;
+        }
+        .content {
+            display: flex;
+            justify-content: space-between;
+            width: 210mm; /* A4 width */
+            max-width: 100%;
+            box-sizing: border-box;
+            padding-top: 20px; /* Spacing */
+        }
+        .section {
+            margin: 20px;
+            flex: 1;
+            padding: 0 20px;
+            border-left: 1px solid #333; /* Visible divider */
+            padding-left: 20px; /* Spacing */
+        }
+        .section:first-child {
+            border-left: none; /* No divider for the first child */
+            padding-left: 0; /* No spacing for the first child */
+        }
+        .job {
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-  <h1>About Me</h1>
-  <div class="content">
-    <p>This is my about page content. You can fill it with your own information.</p>
-  </div>
+    <div class="header">
+        <div class="header-section">
+            <img src="images/Me.jpeg" alt="Me">
+        </div>
+        <div class="header-section">
+            <div class="header-info">
+                <h1>Tomas Peluritis</h1>
+                <p>Data Professional</p>
+                <div id="logos-container">
+                    <div class="logo-item">
+                        <a href="https://www.linkedin.com/in/tomaspeluritis/">
+                            <img src="images/linkedin.png" alt="LinkedIn">
+                        </a>
+                    </div>
+                    <div class="logo-item">
+                        <a href="https://uncledata.substack.com/">
+                            <img src="images/substack.png" alt="Substack">
+                        </a>
+                    </div>
+                    <div class="logo-item">
+                        <a href="https://uncledata.medium.com/">
+                            <img src="images/medium.png" alt="Medium">
+                        </a>
+                    </div>
+                    <div class="logo-item">
+                        <a href="https://podcasters.spotify.com/pod/show/duomenu-dede">
+                            <img src="images/spotify.png" alt="Spotify">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="section">
+            <h2>About Me</h2>
+            <p>I'm a data professional with a diverse journey from Data Analyst to Data Engineer, leading teams and projects. My expertise includes data pipelines, orchestration, SQL, and soft skills for leadership and communication.</p>
+            <p>Running a podcast on all things data called "Uncle Data, speaking in conferences and meetups on various data topics</p>
+
+            <h2>Competences</h2>
+            <p>Data Engineering: Expert in designing and maintaining efficient data pipelines.</p>
+            <p>Technical Leadership: Proven ability to mentor and lead technical teams, driving projects to successful completion.</p>
+        </div>
+
+        <div class="section">
+            <h2>Work Experience</h2>
+            <div class="job">
+                <p><strong>Data Engineer @ Wix | Aug 2023 - Current</strong></p>
+                <p>Focus on Pipeline efficiency and optimization of A/B Testing data platform.<br><strong>Tools:</strong> Trino, Spark, Airflow, AWS</p>
+            </div>
+            <div class="job">
+                <p><strong>Head of Data @ kevin. | Mar 2022 - Jun 2023</strong></p>
+                <p>Led the expansion of the Data Team and developed a comprehensive data platform. Evaluating platforms and tools usage.<br><strong>Tools:</strong> Snowflake, Airflow (MWAA), dbt, Tableau, AWS Lambda, Terraform</p>
+            </div>
+            <div class="job">
+                <p><strong>Team Lead @ HomeToGo | Jun 2021 - Mar 2022</strong></p>
+                <p>Migration from Redshift to Snowflake. Unifying Airflow versions across teams. Defining ways of working over the data org.<br><strong>Tools:</strong> Redshift, Snowflake, Spark, dbt, Airflow, Superset</p>
+            </div>
+            <div class="job">
+                <p><strong>Team Lead @ Wix | Feb 2020 - Jun 2021</strong></p>
+                <p>Providing technical guidance and learning opportunities. Focusing on people growth</p>
+            </div>
+            <div class="job">
+                <p><strong>Data Developer @ Wix | Sep 2018 - Feb 2020</strong></p>
+                <p>Data Pipelines with Presto, Spark & Airflow. Optimizations of existing pipelines.<br><strong>Tools:</strong> Presto, Spark, Airflow</p>
+            </div>
+            <div class="job">
+                <p><strong>Various Roles | Jul 2012 - Sep 2018</strong></p>
+                <p>Various roles from analytics to BI development with MS SQL stack.<br><strong>Tools:</strong> MS SQL</p>
+            </div>
+
+            <h2>Education</h2>
+            <p>Vilnius University</p>
+            <p>Master's degree, Computer Modelling, 2013/2015</p>
+            <p>Bachelor's degree, Financial and actuarial, 2009/2013</p>
+        </div>
+    </div>
 </body>
 </html>
