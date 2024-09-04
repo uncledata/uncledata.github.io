@@ -1,79 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-  <title>Uncle Data</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f5cdb8;
-    }
-
-    #logo {
-      margin-top: 50px;
-    }
-
-    #logo img {
-      width: 500px;
-      height: 500px;
-    }
-    #logos-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 50px;
-    }
-    .logo-item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      margin-right: 20px;
-    }
-
-    .logo-item img {
-      width: 100px;
-      height: 100px;
-      object-fit: contain;
-    }
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tomas Peluritis - Data Engineer</title>
+    <meta name="description" content="Professional portfolio of Tomas Peluritis, a Data Engineer specializing in pipeline efficiency and technical leadership.">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <div id="logo">
-    <img src="images/logo.png" alt="Logo">
-  </div>
-  <div id="logos-container">
-    <div class="logo-item">
-      <a href="https://www.linkedin.com/in/tomaspeluritis/">
-        <img src="images/linkedin.png" alt="LinkedIn">
-      </a>
-    </div>
-    <div class="logo-item">
-      <a href="https://uncledata.substack.com/">
-        <img src="images/substack.png" alt="Substack">
-      </a>
-    </div>
-    <div class="logo-item">
-      <a href="https://uncledata.medium.com/">
-        <img src="images/medium.png" alt="Medium">
-      </a>
-    </div>
-    <div class="logo-item">
-      <a href="https://podcasters.spotify.com/pod/show/duomenu-dede">
-        <img src="images/spotify.png" alt="Spotify">
-      </a>
-    </div>
-    <div class="logo-item">
-      <a href="https://github.com/uncledata">
-        <img src="images/github.png" alt="Spotify">
-      </a>
-     </div>
-     <div class="logo-item">
-        <a href="about.html">
-            <img src="images/Resume.png" alt="Resume">
-        </a>
-    </div>
-  </div>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="images/logo.png" alt="Logo" class="w-12 h-12 mr-4">
+                <h1 class="text-2xl font-bold">Tomas Peluritis</h1>
+            </div>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="https://www.linkedin.com/in/tomaspeluritis/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="images/linkedin.png" alt="LinkedIn" class="w-8 h-8"></a></li>
+                    <li><a href="https://uncledata.substack.com/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="images/substack.png" alt="Substack" class="w-8 h-8"></a></li>
+                    <li><a href="https://uncledata.medium.com/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="images/medium.png" alt="Medium" class="w-8 h-8"></a></li>
+                    <li><a href="https://podcasters.spotify.com/pod/show/duomenu-dede" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="images/spotify.png" alt="Spotify" class="w-8 h-8"></a></li>
+                    <li><a href="https://github.com/TomasPel" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="images/github.png" alt="GitHub" class="w-8 h-8"></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col items-center justify-center">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold mb-4">Welcome to My Portfolio</h2>
+            <p class="text-xl text-gray-600 mb-4">Data Engineer | Continuous Learner | Knowledge Sharer</p>
+            <p class="max-w-2xl mx-auto">Explore my professional journey, skills, and experiences in the world of data engineering. Whether you're looking for a detailed about me or a structured CV, you'll find it here.</p>
+        </div>
+        <div class="flex space-x-4">
+            <a href="about.html" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+                About Me
+            </a>
+            <a href="cv.html" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+                View CV
+            </a>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 Tomas Peluritis. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>
