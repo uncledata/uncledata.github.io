@@ -17,32 +17,55 @@
                     <p class="text-sm text-gray-600">Data Engineering Solutions</p>
                 </div>
             </a>
-            <nav>
-                <ul class="flex space-x-4 items-center">
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+            <nav id="menu" class="hidden md:flex md:items-center">
+                <ul class="flex flex-col md:flex-row md:space-x-4 items-center absolute md:static top-24 left-0 w-full bg-white md:bg-transparent shadow-md md:shadow-none p-4 md:p-0">
                     <li><a href="index.html" class="text-blue-600 hover:text-blue-800" title="Home">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
+                        <span class="md:hidden">Home</span>
                     </a></li>
                     <li><a href="about.html" class="text-blue-600 hover:text-blue-800" title="About">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
+                        <span class="md:hidden">About</span>
                     </a></li>
                     <li><a href="cv.html" class="text-blue-600 hover:text-blue-800 font-semibold" title="CV">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
+                        <span class="md:hidden">CV</span>
                     </a></li>
                     <li><a href="consulting.html" class="text-blue-600 hover:text-blue-800" title="Consulting">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
+                        <span class="md:hidden">Consulting</span>
                     </a></li>
-                    <li><a href="https://www.linkedin.com/in/tomaspeluritis/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="images/linkedin.png" alt="LinkedIn" class="w-8 h-8"></a></li>
-                    <li><a href="https://github.com/uncledata" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="images/github.png" alt="GitHub" class="w-8 h-8"></a></li>
-                    <li><a href="https://uncledata.substack.com/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="images/substack.png" alt="Substack" class="w-8 h-8"></a></li>
-                    <li><a href="https://podcasters.spotify.com/pod/show/duomenu-dede" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="images/spotify.png" alt="Spotify Podcast" class="w-8 h-8"></a></li>
+                    <li><a href="https://www.linkedin.com/in/tomaspeluritis/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110">
+                        <img src="images/linkedin.png" alt="LinkedIn" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">LinkedIn</span>
+                    </a></li>
+                    <li><a href="https://github.com/uncledata" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"></a>
+                        <img src="images/github.png" alt="GitHub" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">GitHub</span>
+                    </a></li>
+                    <li><a href="https://uncledata.substack.com/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110">
+                        <img src="images/substack.png" alt="Substack" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">Substack</span>
+                    </a></li>
+                    <li><a href="https://podcasters.spotify.com/pod/show/duomenu-dede" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110">
+                        <img src="images/spotify.png" alt="Spotify Podcast" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">Spotify</span>
+                    </a></li>
                 </ul>
             </nav>
         </div>
@@ -170,5 +193,13 @@
             </div>
         </div>
     </footer>
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const menu = document.getElementById('menu');
+
+        menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
 </body>
 </html>
