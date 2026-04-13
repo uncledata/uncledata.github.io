@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg-light: #FBF6F3;
+  --color-bg-dark: #1A1A2E;
+  --color-accent-peach: #f5cdb8;
+  --color-accent-coral: #E8845A;
+  --color-accent-coral-deep: #C4643C;
+  --color-accent-blue: #3B7DD8;
+  --font-heading: Georgia, serif;
+  --font-body: Calibri, system-ui, sans-serif;
+}

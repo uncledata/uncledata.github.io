@@ -15,5 +15,9 @@
 # Thumbnails
 Thumbs.db
 
-# Node (in case any tooling is added later)
+# Node
 node_modules/
+
+# Astro
+dist/
+.astro/
