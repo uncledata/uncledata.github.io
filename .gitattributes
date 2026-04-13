@@ -1,0 +1,8 @@
+# Binary files — prevent git from diffing or merging
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+
+# Git LFS — large binary files
+*.pdf filter=lfs diff=lfs merge=lfs -text
