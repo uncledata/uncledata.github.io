@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond dbt: Modern SQL Transformation and Lineage - Uncle Data | Tomas Peluritis</title>
+    <meta name="description" content="A deep dive into SQLGlot, SQLMesh, and DIY data lineage approaches. Presented at Big Data Europe 2025 by Tomas Peluritis.">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center">
+                <img src="../images/logo.png" alt="Uncle Data Logo" class="w-12 h-12 mr-4">
+                <div>
+                    <h1 class="text-2xl font-bold">Uncle Data</h1>
+                    <p class="text-sm text-gray-600">Data Engineering Solutions</p>
+                </div>
+            </a>
+            <div class="md:hidden">
+                <button id="menu-btn" type="button" aria-label="Open menu" aria-controls="menu" aria-expanded="false" class="text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+            <nav id="menu" class="hidden md:flex md:items-center fixed md:static top-24 left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none">
+                <ul class="flex flex-col md:flex-row md:space-x-4 items-center p-4 md:p-0">
+                    <li><a href="../index.html" class="text-blue-600 hover:text-blue-800" title="Home">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span class="md:hidden">Home</span>
+                    </a></li>
+                    <li><a href="../about.html" class="text-blue-600 hover:text-blue-800" title="About">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span class="md:hidden">About</span>
+                    </a></li>
+                    <li><a href="../talks.html" class="text-blue-600 hover:text-blue-800 font-semibold" title="Talks">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                        <span class="md:hidden">Talks</span>
+                    </a></li>
+                    <li><a href="../cv.html" class="text-blue-600 hover:text-blue-800" title="CV">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="md:hidden">CV</span>
+                    </a></li>
+                    <li><a href="../consulting.html" class="text-blue-600 hover:text-blue-800" title="Consulting">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <span class="md:hidden">Consulting</span>
+                    </a></li>
+                    <li><a href="https://www.linkedin.com/in/tomaspeluritis/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition-transform hover:scale-110">
+                        <img src="../images/linkedin.png" alt="LinkedIn" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">LinkedIn</span>
+                    </a></li>
+                    <li><a href="https://github.com/uncledata" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition-transform hover:scale-110">
+                        <img src="../images/github.png" alt="GitHub" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">GitHub</span>
+                    </a></li>
+                    <li><a href="https://uncledata.substack.com/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition-transform hover:scale-110">
+                        <img src="../images/substack.png" alt="Substack" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">Substack</span>
+                    </a></li>
+                    <li><a href="https://podcasters.spotify.com/pod/show/duomenu-dede" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition-transform hover:scale-110">
+                        <img src="../images/spotify.png" alt="Spotify Podcast" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">Spotify</span>
+                    </a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+
+        <!-- Title and metadata -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-2">Beyond dbt: Modern SQL Transformation and Lineage</h2>
+            <p class="text-gray-500 mb-6">Big Data Europe 2025 &middot; November 21, 2025 &middot; Vilnius, Lithuania</p>
+            <p class="text-gray-700 mb-4">I had these slides polished and ready by August 2025. Then in September, Fivetran acquired Tobiko (the company behind SQLMesh). In October, Fivetran merged with dbt Labs. So half the talk became breaking news before I even gave it. Fun times.</p>
+            <p class="text-gray-700 mb-6">This talk covers what sits beyond dbt in the SQL transformation space: SQLGlot as a parser, SQLMesh as an alternative framework, and the various ways you can collect data lineage without selling a kidney for an enterprise tool. Including the DIY route, because of course I went there.</p>
+            <a href="pdfs/beyond-dbt-big-data-europe-2025.pdf" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">Download slides (PDF)</a>
+            <p class="text-sm text-gray-400 italic mt-4">The section writeups below were generated by AI from the talk outline. The stories and opinions are real.</p>
+        </section>
+
+        <!-- The elephant in the room -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">The Elephant in the Room</h3>
+            <p class="text-gray-700 mb-4">The talk opens with the timeline that made preparing this presentation... interesting. Slides done in August. Fivetran acquires Tobiko in September. Fivetran merges with dbt in October. By November, the landscape I was presenting on had shifted underneath me. The data lineage market is estimated at $1.5 to $2 billion, and it is growing fast. Forrester has reports on it. Companies are spending real money on this problem.</p>
+            <p class="text-gray-700">So the question becomes: do you buy a tool, use what your existing stack gives you, or build something yourself?</p>
+        </section>
+
+        <!-- SQLGlot Deep Dive -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">SQLGlot: The Parser That Powers Everything</h3>
+            <p class="text-gray-700 mb-4">Before talking about SQLMesh, you need to understand SQLGlot. It is a SQL parser, transpiler, optimiser, and engine. Zero dependencies. Supports 24+ SQL dialects. Pure Python, and somehow still fast enough for production use.</p>
+            <p class="text-gray-700 mb-4">What makes it interesting is the Abstract Syntax Tree (AST). You feed it a SQL query, and it gives you back a tree structure representing every part of that query: the columns, the tables, the joins, the conditions. You can walk that tree, modify it, or use it to figure out which tables feed into which. That is the foundation of lineage.</p>
+            <p class="text-gray-700">Transpilation is the other killer feature. Write SQL in one dialect, output it in another. Snowflake to BigQuery. Postgres to Spark. It handles the syntax differences so you do not have to.</p>
+        </section>
+
+        <!-- SQLMesh -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">SQLMesh: The Alternative to dbt</h3>
+            <p class="text-gray-700 mb-4">SQLMesh is built on top of SQLGlot, and it takes a different approach from dbt in a few areas that matter. For one, it has a state database. It tracks what has been run, what changed, and what needs to be reprocessed. This is not a log file. It is a proper database that SQLMesh uses to make decisions about incremental runs.</p>
+            <p class="text-gray-700 mb-4">The model definitions look similar to dbt at first glance, but there are differences in how you declare things like grain and audits. Testing also works differently. Where dbt has you write YAML-based tests, SQLMesh lets you write SQL-based audits that feel more natural if you are already thinking in SQL.</p>
+            <p class="text-gray-700">The big differentiator, in my eyes, is breaking change detection. In dbt, you catch breaking changes through code review. Manually. SQLMesh detects them automatically and even suggests backfills. It also does virtual versioning, where instead of physically creating new tables for every model version, it uses views and metadata. Less storage, faster iterations.</p>
+        </section>
+
+        <!-- Lineage Approaches -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">Lineage: Your Options (and Their Tradeoffs)</h3>
+            <p class="text-gray-700 mb-4">The talk walks through four approaches to collecting data lineage, and none of them are perfect.</p>
+            <p class="text-gray-700 mb-4"><strong>Buy a tool.</strong> The easiest path. You get a UI, integrations, support. You also get a bill that scales with your data estate. If it fits your budget, go for it.</p>
+            <p class="text-gray-700 mb-4"><strong>dbt native lineage.</strong> It works out of the box, which is great. But the UI gets messy on larger projects. And if you want advanced features like column-level lineage or impact analysis, that is dbt Cloud territory. Extra features, extra money.</p>
+            <p class="text-gray-700 mb-4"><strong>Airflow with OpenLineage.</strong> Promising in theory. In practice: not all operators have OpenLineage integrations. Custom operators require manual implementation. SQL parsing breaks on non-standard queries. Column-level lineage is not ready yet. And if you use dynamic tasks with SQL, good luck.</p>
+            <p class="text-gray-700"><strong>Dagster.</strong> Asset-based lineage is built into the framework, which is nice. But the community is still relatively small, it requires a mindset shift from task-based orchestration, and the advanced features have the same story: extra features, extra money.</p>
+        </section>
+
+        <!-- DIY -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">The DIY Route (Because Of Course)</h3>
+            <p class="text-gray-700 mb-4">The second half of the talk is a live walkthrough of building lineage yourself using SQLGlot. It starts simple: parse a query, extract the source and target tables. Then it gets more complex: nested CTEs, subqueries, multiple joins. Then it gets real: people who use SELECT * in production. That one got a laugh.</p>
+            <p class="text-gray-700 mb-4">The approach works like this. If you use dbt, compile your models first so you are working with resolved SQL rather than Jinja templates. Then run the parsed SQL through SQLGlot to extract the lineage graph.</p>
+            <p class="text-gray-700">The full process flow: extract SQL from your transformation layer, parse it with SQLGlot, push the lineage data to a database, and put an API on top. It is not a product. It is a tool you build and maintain yourself. But for teams that need lineage without the enterprise price tag, it works.</p>
+        </section>
+
+        <!-- Key takeaways -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">Key Takeaways</h3>
+            <ul class="list-disc list-inside space-y-2 text-gray-700 mb-6">
+                <li>SQLGlot is the engine behind SQLMesh and a powerful tool on its own for parsing and transpiling SQL.</li>
+                <li>SQLMesh offers automatic breaking change detection and virtual versioning, things dbt does not do natively.</li>
+                <li>Every lineage approach has tradeoffs. Buy vs build is a real question, not a default answer.</li>
+                <li>DIY lineage with SQLGlot is viable if you are willing to maintain it.</li>
+                <li>The dbt/Fivetran merger is going to reshape this space. Keep an eye on it.</li>
+            </ul>
+            <p class="text-gray-600 italic">The tools are changing fast. The fundamentals (parsing SQL, tracking dependencies) are not.</p>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+                <a href="../index.html" class="flex items-center mb-4 md:mb-0">
+                    <img src="../images/logo.png" alt="Uncle Data Logo" class="w-10 h-10 mr-3 bg-white rounded-full p-1">
+                    <div>
+                        <h3 class="text-xl font-bold">Uncle Data</h3>
+                        <p class="text-sm text-gray-400">Data Engineering Solutions</p>
+                    </div>
+                </a>
+                <div class="flex space-x-4">
+                    <a href="https://www.linkedin.com/in/tomaspeluritis/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="../images/linkedin.png" alt="LinkedIn" class="w-8 h-8"></a>
+                    <a href="https://github.com/uncledata" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="../images/github.png" alt="GitHub" class="w-8 h-8"></a>
+                    <a href="https://uncledata.substack.com/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="../images/substack.png" alt="Substack" class="w-8 h-8"></a>
+                    <a href="https://podcasters.spotify.com/pod/show/duomenu-dede" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="../images/spotify.png" alt="Spotify Podcast" class="w-8 h-8"></a>
+                </div>
+            </div>
+            <div class="text-center border-t border-gray-700 pt-4 mt-4">
+                <p class="text-sm text-gray-400">&copy; 2026 Tomas Peluritis (Uncle Data). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const menu = document.getElementById('menu');
+
+        menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+            menuBtn.setAttribute('aria-expanded', String(!menu.classList.contains('hidden')));
+        });
+    </script>
+</body>
+</html>
