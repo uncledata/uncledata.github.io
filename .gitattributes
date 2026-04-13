@@ -1,5 +1,4 @@
 # Binary files — prevent git from diffing or merging
-*.pdf binary
 *.png binary
 *.jpg binary
 *.jpeg binary
