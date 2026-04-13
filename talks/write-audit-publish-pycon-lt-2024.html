@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write-Audit-Publish Pattern in Modern Data Pipelines - Uncle Data | Tomas Peluritis</title>
+    <meta name="description" content="The Write-Audit-Publish pattern explained with real implementations in Snowflake and Apache Iceberg. Presented at PyCon Lithuania 2024 by Tomas Peluritis.">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center">
+                <img src="../images/logo.png" alt="Uncle Data Logo" class="w-12 h-12 mr-4">
+                <div>
+                    <h1 class="text-2xl font-bold">Uncle Data</h1>
+                    <p class="text-sm text-gray-600">Data Engineering Solutions</p>
+                </div>
+            </a>
+            <div class="md:hidden">
+                <button id="menu-btn" type="button" aria-label="Open menu" aria-controls="menu" aria-expanded="false" class="text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+            <nav id="menu" class="hidden md:flex md:items-center fixed md:static top-24 left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none">
+                <ul class="flex flex-col md:flex-row md:space-x-4 items-center p-4 md:p-0">
+                    <li><a href="../index.html" class="text-blue-600 hover:text-blue-800" title="Home">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span class="md:hidden">Home</span>
+                    </a></li>
+                    <li><a href="../about.html" class="text-blue-600 hover:text-blue-800" title="About">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span class="md:hidden">About</span>
+                    </a></li>
+                    <li><a href="../talks.html" class="text-blue-600 hover:text-blue-800 font-semibold" title="Talks">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                        <span class="md:hidden">Talks</span>
+                    </a></li>
+                    <li><a href="../cv.html" class="text-blue-600 hover:text-blue-800" title="CV">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="md:hidden">CV</span>
+                    </a></li>
+                    <li><a href="../consulting.html" class="text-blue-600 hover:text-blue-800" title="Consulting">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 md:block hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <span class="md:hidden">Consulting</span>
+                    </a></li>
+                    <li><a href="https://www.linkedin.com/in/tomaspeluritis/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition-transform hover:scale-110">
+                        <img src="../images/linkedin.png" alt="LinkedIn" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">LinkedIn</span>
+                    </a></li>
+                    <li><a href="https://github.com/uncledata" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition-transform hover:scale-110">
+                        <img src="../images/github.png" alt="GitHub" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">GitHub</span>
+                    </a></li>
+                    <li><a href="https://uncledata.substack.com/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition-transform hover:scale-110">
+                        <img src="../images/substack.png" alt="Substack" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">Substack</span>
+                    </a></li>
+                    <li><a href="https://podcasters.spotify.com/pod/show/duomenu-dede" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition-transform hover:scale-110">
+                        <img src="../images/spotify.png" alt="Spotify Podcast" class="w-8 h-8 md:block hidden">
+                        <span class="md:hidden">Spotify</span>
+                    </a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+
+        <!-- Title and metadata -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-3xl font-bold mb-2">Write-Audit-Publish Pattern in Modern Data Pipelines</h2>
+            <p class="text-gray-500 mb-6">PyCon Lithuania 2024 &middot; April 5, 2024 &middot; Vilnius, Lithuania</p>
+            <p class="text-gray-700 mb-4">Your pipeline ran successfully. The data looks wrong. Sound familiar? The Write-Audit-Publish pattern is a simple idea: write data to a staging area, run quality checks on it, and only then promote it to where consumers can see it. If the checks fail, the bad data never reaches production.</p>
+            <p class="text-gray-700 mb-6">This talk covers why the pattern exists, how to implement it yourself with SQL, and how Snowflake's Dynamic Tables and Apache Iceberg handle it natively.</p>
+            <a href="pdfs/write-audit-publish-pycon-lt-2024.pdf" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">Download slides (PDF)</a>
+            <p class="text-sm text-gray-400 italic mt-4">The section writeups below were generated by AI from the talk outline. The stories and opinions are real.</p>
+        </section>
+
+        <!-- History -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">A Brief History of "Trust Me, the Data Is Fine"</h3>
+            <p class="text-gray-700 mb-4">The talk starts with a quick history of how we got here. ETL was the original pattern: extract data, transform it, load it into the warehouse. Then ELT flipped the order because cloud warehouses made it cheap to load raw data first and transform later. Along the way, databases gave us constraints (NOT NULL, UNIQUE, FOREIGN KEY) to catch bad data at write time.</p>
+            <p class="text-gray-700 mb-4">But here is the thing. Most modern data warehouses do not enforce constraints. Snowflake has them, but they are informational only. BigQuery has them, but they are not enforced. You can declare a NOT NULL column and still insert NULLs. The safety net looks real, but it has holes.</p>
+            <p class="text-gray-700">So the question becomes: if the database will not protect you, who will?</p>
+        </section>
+
+        <!-- The pattern -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">Write, Audit, Publish</h3>
+            <p class="text-gray-700 mb-4">The pattern is three steps. <strong>Write:</strong> load your data into a staging area. Not the production table. A separate location where nobody is querying it yet. <strong>Audit:</strong> run your quality checks. Row counts, null checks, schema validation, business rules, whatever matters for this dataset. <strong>Publish:</strong> if the checks pass, promote the data to the production table. If they fail, stop. Alert someone. Do not let bad data through.</p>
+            <p class="text-gray-700">Simple concept. The tricky part is implementing it in a way that does not double your pipeline complexity.</p>
+        </section>
+
+        <!-- DIY approach -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">The DIY Approach</h3>
+            <p class="text-gray-700 mb-4">The talk walks through building WAP yourself with SQL. Write to a staging table. Run audit queries against it (row counts match expectations, no nulls in required columns, no duplicate keys, values within expected ranges). If all checks pass, swap the staging table into production using a table rename or an INSERT INTO ... SELECT.</p>
+            <p class="text-gray-700 mb-4">You can orchestrate this in Airflow, Dagster, or any scheduler. The audit step is just a set of SQL queries that return pass/fail. If any query fails, the DAG stops. The production table stays untouched.</p>
+            <p class="text-gray-700">It works. It is not fancy. But it works, and you control every part of it.</p>
+        </section>
+
+        <!-- Snowflake -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">Snowflake's Dynamic Tables and Streams</h3>
+            <p class="text-gray-700 mb-4">Snowflake gives you tools that make WAP easier without building everything from scratch. Dynamic Tables automatically refresh when upstream data changes. Streams track changes to a table (inserts, updates, deletes) so you can process only the delta.</p>
+            <p class="text-gray-700">Combine these and you get a pattern where: data lands in a raw table, a Stream captures the new rows, a Dynamic Table applies transformations, and your audit logic runs before the data is visible to consumers. Snowflake handles the orchestration of refreshes. You handle the quality rules. It is a good middle ground between fully DIY and fully managed.</p>
+        </section>
+
+        <!-- Iceberg -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">Apache Iceberg: Branch, Audit, Merge</h3>
+            <p class="text-gray-700 mb-4">Apache Iceberg takes a different approach. It supports table branching, similar to how git works with code. You create a branch of your table, write new data to the branch, run audits against the branch, and if everything passes, merge it into the main branch. If audits fail, drop the branch. The main table never sees the bad data.</p>
+            <p class="text-gray-700 mb-4">This is, in my eyes, the cleanest implementation of WAP available today. The branch is isolated. Consumers querying the main branch see consistent data throughout. And you get time travel for free, so you can always go back to a previous state if something slips through.</p>
+            <p class="text-gray-700">The downside: you need to be running Iceberg. If you are on a traditional data warehouse without Iceberg support, this option is not available to you.</p>
+        </section>
+
+        <!-- Key takeaways -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-4">Key Takeaways</h3>
+            <ul class="list-disc list-inside space-y-2 text-gray-700 mb-6">
+                <li>Most warehouse constraints are informational, not enforced. Do not rely on them to catch bad data.</li>
+                <li>Write-Audit-Publish is a simple pattern: stage data, check it, promote it only if it passes.</li>
+                <li>You can build WAP yourself with SQL and any orchestrator. It does not require special tooling.</li>
+                <li>Snowflake's Dynamic Tables and Streams make WAP easier if you are already on Snowflake.</li>
+                <li>Apache Iceberg's branching model is the cleanest WAP implementation available, but requires Iceberg.</li>
+                <li>The pattern costs almost nothing to implement and saves you from the "the data looked fine when I loaded it" conversation.</li>
+            </ul>
+            <p class="text-gray-600 italic">Bad data that never reaches production is infinitely cheaper to fix than bad data that does.</p>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+                <a href="../index.html" class="flex items-center mb-4 md:mb-0">
+                    <img src="../images/logo.png" alt="Uncle Data Logo" class="w-10 h-10 mr-3 bg-white rounded-full p-1">
+                    <div>
+                        <h3 class="text-xl font-bold">Uncle Data</h3>
+                        <p class="text-sm text-gray-400">Data Engineering Solutions</p>
+                    </div>
+                </a>
+                <div class="flex space-x-4">
+                    <a href="https://www.linkedin.com/in/tomaspeluritis/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="../images/linkedin.png" alt="LinkedIn" class="w-8 h-8"></a>
+                    <a href="https://github.com/uncledata" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="../images/github.png" alt="GitHub" class="w-8 h-8"></a>
+                    <a href="https://uncledata.substack.com/" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="../images/substack.png" alt="Substack" class="w-8 h-8"></a>
+                    <a href="https://podcasters.spotify.com/pod/show/duomenu-dede" target="_blank" rel="noopener noreferrer" class="transition-transform hover:scale-110"><img src="../images/spotify.png" alt="Spotify Podcast" class="w-8 h-8"></a>
+                </div>
+            </div>
+            <div class="text-center border-t border-gray-700 pt-4 mt-4">
+                <p class="text-sm text-gray-400">&copy; 2026 Tomas Peluritis (Uncle Data). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const menu = document.getElementById('menu');
+
+        menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+            menuBtn.setAttribute('aria-expanded', String(!menu.classList.contains('hidden')));
+        });
+    </script>
+</body>
+</html>
