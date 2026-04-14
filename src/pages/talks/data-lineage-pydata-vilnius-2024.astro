@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title='Data Lineage: Where "It Depends" Finally Gets an Answer | Uncle Data'
+  description="dbt, OpenLineage, Dagster, and DIY with SQLGlot. PyData Vilnius 2024."
+>
+
+  <div class="pt-12 pb-4">
+    <a href="/talks" class="font-body text-sm text-bg-dark/40 hover:text-accent-coral transition-colors">&larr; All talks</a>
+  </div>
+
+  <section class="pb-8 max-w-2xl">
+    <p class="font-body text-xs text-bg-dark/40 uppercase tracking-wide mb-2">PyData Meetup Vilnius &middot; November 28, 2024 &middot; Vilnius</p>
+    <h1 class="font-heading text-3xl md:text-4xl text-bg-dark leading-tight mb-6">
+      Data Lineage: Where "It Depends" Finally Gets an Answer
+    </h1>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-6">
+      Everyone agrees data lineage is important. Nobody agrees on how to actually get it. This talk walks through the real options: dbt's built-in lineage, Airflow's OpenLineage integration, Dagster's asset-based approach, and the DIY path using SQLGlot. Each one has tradeoffs, and I have opinions about all of them.
+    </p>
+    <a
+      href="/talks/pdfs/data-lineage-pydata-vilnius-2024.pdf"
+      class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-5 py-2.5 rounded transition-colors text-sm"
+    >
+      Download slides (PDF)
+    </a>
+  </section>
+
+  <div class="max-w-2xl space-y-10 border-t border-accent-peach/40 pt-10 pb-16 font-body text-bg-dark/90 leading-relaxed">
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The Lineage Market Is Real Money</h2>
+      <p class="mb-4">The data lineage market sits at around $1.5 to $2 billion. Companies are paying serious money for tools that answer "where did this number come from?" and "what breaks if I change this table?" As data ecosystems get more complex, the need for visibility keeps growing.</p>
+      <p>So the question is not whether you need lineage. It is how you get it without overcomplicating your stack or blowing your budget.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">dbt: Lineage That Comes Free (Until It Doesn't)</h2>
+      <p class="mb-4">If you already use dbt, you get lineage for free. The DAG view shows you which models depend on which. For smaller projects, it might be all you need.</p>
+      <p class="mb-4">But the UI gets messy once your project grows. Column-level lineage, impact analysis, and anything beyond the basic graph requires dbt Cloud. The pattern is familiar: the basic feature is free, the useful features cost money.</p>
+      <p>Also: dbt lineage only covers your transformation layer. It does not know about your ingestion pipelines, your BI tools, or anything outside the dbt project.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Airflow + OpenLineage: Promising, With Caveats</h2>
+      <p class="mb-4">OpenLineage is an open standard for collecting lineage metadata, and Airflow has an integration for it. In theory, this gives you lineage across your entire orchestration layer, not just transformations.</p>
+      <p class="mb-4">In practice: not all operators have OpenLineage integrations. If you wrote custom operators (and who hasn't), you need to implement the lineage extraction yourself. The SQL parsing does not handle non-standard queries well. Column-level lineage is not ready yet. Combine dynamic tasks with SQL and things get complicated fast.</p>
+      <p>It is improving, but it is not a plug-and-play solution today.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Dagster: Built-in, But at a Cost</h2>
+      <p class="mb-4">Dagster's asset-based model means lineage is baked into how you define your pipelines. Every asset knows its upstream and downstream dependencies. This is genuinely nice if you are starting fresh.</p>
+      <p>The community is still relatively small compared to Airflow. It requires a real mindset shift from task-based orchestration. And the advanced lineage features follow the same pattern as everyone else: extra features, extra money.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">DIY with SQLGlot</h2>
+      <p class="mb-4">SQLGlot is a SQL parser that understands 24+ dialects, has zero dependencies, and is pure Python. You give it a SQL query, it gives you back an Abstract Syntax Tree (AST) that you can walk to extract which tables are read from and which are written to. That is lineage.</p>
+      <p class="mb-4">The talk includes a walkthrough of increasing complexity. Start with a simple SELECT. Then add joins. Then CTEs. Then subqueries. Then the real world shows up: SELECT *, dynamic SQL, and queries that were clearly written at 2am. Each step adds complexity to the parsing logic, but SQLGlot handles most of it.</p>
+      <p>If you use dbt, compile your models first and then parse the resolved SQL. The full pipeline: extract SQL, parse with SQLGlot, push results to a database, add an API on top. Not a polished product. But it is yours, and it does not come with a monthly bill.</p>
+    </div>
+
+    <div class="border-t border-accent-peach/40 pt-8">
+      <h2 class="font-heading text-xl text-bg-dark mb-4">Key takeaways</h2>
+      <ul class="list-disc list-inside space-y-2 text-bg-dark/80">
+        <li>"It depends" is the honest answer to "how should I do lineage?" But now you know what it depends on.</li>
+        <li>dbt lineage works for the transformation layer. Beyond that, you need something else.</li>
+        <li>OpenLineage is promising but not production-ready for all use cases.</li>
+        <li>Dagster gives you lineage for free if you buy into the asset model.</li>
+        <li>SQLGlot lets you build lineage yourself if you are willing to maintain it.</li>
+        <li>Every vendor eventually charges for the features you actually need. Plan accordingly.</li>
+      </ul>
+    </div>
+
+  </div>
+
+</BaseLayout>

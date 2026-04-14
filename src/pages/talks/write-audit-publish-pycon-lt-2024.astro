@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Write-Audit-Publish Pattern in Modern Data Pipelines | Uncle Data"
+  description="Stage data, audit it, publish only what passes. PyCon Lithuania 2024."
+>
+
+  <div class="pt-12 pb-4">
+    <a href="/talks" class="font-body text-sm text-bg-dark/40 hover:text-accent-coral transition-colors">&larr; All talks</a>
+  </div>
+
+  <section class="pb-8 max-w-2xl">
+    <p class="font-body text-xs text-bg-dark/40 uppercase tracking-wide mb-2">PyCon Lithuania 2024 &middot; April 5, 2024 &middot; Vilnius</p>
+    <h1 class="font-heading text-3xl md:text-4xl text-bg-dark leading-tight mb-6">
+      Write-Audit-Publish Pattern in Modern Data Pipelines
+    </h1>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-4">
+      Your pipeline ran successfully. The data looks wrong. Sound familiar? The Write-Audit-Publish pattern is a simple idea: write data to a staging area, run quality checks on it, and only then promote it to where consumers can see it. If the checks fail, the bad data never reaches production.
+    </p>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-6">
+      This talk covers why the pattern exists, how to implement it yourself with SQL, and how Snowflake Dynamic Tables and Apache Iceberg handle it natively.
+    </p>
+    <a
+      href="/talks/pdfs/write-audit-publish-pycon-lt-2024.pdf"
+      class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-5 py-2.5 rounded transition-colors text-sm"
+    >
+      Download slides (PDF)
+    </a>
+  </section>
+
+  <div class="max-w-2xl space-y-10 border-t border-accent-peach/40 pt-10 pb-16 font-body text-bg-dark/90 leading-relaxed">
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">A Brief History of "Trust Me, the Data Is Fine"</h2>
+      <p class="mb-4">ETL was the original pattern: extract data, transform it, load it into the warehouse. Then ELT flipped the order because cloud warehouses made it cheap to load raw data first and transform later. Along the way, databases gave us constraints (NOT NULL, UNIQUE, FOREIGN KEY) to catch bad data at write time.</p>
+      <p class="mb-4">But here is the thing. Most modern data warehouses do not enforce constraints. Snowflake has them, but they are informational only. BigQuery has them, but they are not enforced. You can declare a NOT NULL column and still insert NULLs. The safety net looks real, but it has holes.</p>
+      <p>So the question becomes: if the database will not protect you, who will?</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Write, Audit, Publish</h2>
+      <p class="mb-4">The pattern is three steps. <strong class="text-bg-dark">Write:</strong> load your data into a staging area. Not the production table. A separate location where nobody is querying it yet. <strong class="text-bg-dark">Audit:</strong> run your quality checks. Row counts, null checks, schema validation, business rules, whatever matters for this dataset. <strong class="text-bg-dark">Publish:</strong> if the checks pass, promote the data to the production table. If they fail, stop. Alert someone. Do not let bad data through.</p>
+      <p>Simple concept. The tricky part is implementing it in a way that does not double your pipeline complexity.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The DIY Approach</h2>
+      <p class="mb-4">Building WAP yourself with SQL: write to a staging table, run audit queries against it (row counts match expectations, no nulls in required columns, no duplicate keys, values within expected ranges), and if all checks pass, swap the staging table into production using a table rename or INSERT INTO ... SELECT.</p>
+      <p class="mb-4">You can orchestrate this in Airflow, Dagster, or any scheduler. The audit step is just a set of SQL queries that return pass/fail. If any query fails, the DAG stops. The production table stays untouched.</p>
+      <p>It works. It is not fancy. But it works, and you control every part of it.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Snowflake Dynamic Tables and Streams</h2>
+      <p class="mb-4">Snowflake gives you tools that make WAP easier without building everything from scratch. Dynamic Tables automatically refresh when upstream data changes. Streams track changes to a table (inserts, updates, deletes) so you can process only the delta.</p>
+      <p>Combine these and you get a pattern where data lands in a raw table, a Stream captures the new rows, a Dynamic Table applies transformations, and your audit logic runs before the data is visible to consumers. Snowflake handles the orchestration of refreshes. You handle the quality rules. A good middle ground between fully DIY and fully managed.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Apache Iceberg: Branch, Audit, Merge</h2>
+      <p class="mb-4">Apache Iceberg supports table branching, similar to how git works with code. You create a branch of your table, write new data to the branch, run audits against the branch, and if everything passes, merge it into the main branch. If audits fail, drop the branch. The main table never sees the bad data.</p>
+      <p class="mb-4">This is the cleanest implementation of WAP available today. The branch is isolated. Consumers querying the main branch see consistent data throughout. And you get time travel for free, so you can always go back to a previous state if something slips through.</p>
+      <p>The downside: you need to be running Iceberg. If you are on a traditional data warehouse without Iceberg support, this option is not available to you.</p>
+    </div>
+
+    <div class="border-t border-accent-peach/40 pt-8">
+      <h2 class="font-heading text-xl text-bg-dark mb-4">Key takeaways</h2>
+      <ul class="list-disc list-inside space-y-2 text-bg-dark/80 mb-4">
+        <li>Most warehouse constraints are informational, not enforced. Do not rely on them to catch bad data.</li>
+        <li>Write-Audit-Publish is a simple pattern: stage data, check it, promote it only if it passes.</li>
+        <li>You can build WAP yourself with SQL and any orchestrator. It does not require special tooling.</li>
+        <li>Snowflake Dynamic Tables and Streams make WAP easier if you are already on Snowflake.</li>
+        <li>Apache Iceberg's branching model is the cleanest WAP implementation available, but requires Iceberg.</li>
+        <li>The pattern costs almost nothing to implement and saves you from the "the data looked fine when I loaded it" conversation.</li>
+      </ul>
+      <p class="text-bg-dark/50 italic text-sm">Bad data that never reaches production is infinitely cheaper to fix than bad data that does.</p>
+    </div>
+
+  </div>
+
+</BaseLayout>

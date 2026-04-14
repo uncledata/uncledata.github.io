@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Why Not Dagster | Uncle Data"
+  description="An honest look at Dagster from an Airflow user's perspective. PyData Vilnius 2023."
+>
+
+  <div class="pt-12 pb-4">
+    <a href="/talks" class="font-body text-sm text-bg-dark/40 hover:text-accent-coral transition-colors">&larr; All talks</a>
+  </div>
+
+  <section class="pb-8 max-w-2xl">
+    <p class="font-body text-xs text-bg-dark/40 uppercase tracking-wide mb-2">PyData Meetup Vilnius &middot; November 21, 2023 &middot; Vilnius</p>
+    <h1 class="font-heading text-3xl md:text-4xl text-bg-dark leading-tight mb-6">
+      Why Not Dagster
+    </h1>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-4">
+      Being an Airflow user for 5 to 6 years, you get used to things. Then someone asks "have you tried Dagster?" and you have to actually look into it. This talk is the result of that investigation: what Dagster does differently, where it genuinely improves on Airflow, and why I still did not switch.
+    </p>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-6">
+      Not a Dagster hit piece. Not a sales pitch either. Just an honest look from someone who already has a working orchestrator and wanted to know if the grass really is greener.
+    </p>
+    <a
+      href="/talks/pdfs/why-not-dagster-pydata-vilnius-2023.pdf"
+      class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-5 py-2.5 rounded transition-colors text-sm"
+    >
+      Download slides (PDF)
+    </a>
+  </section>
+
+  <div class="max-w-2xl space-y-10 border-t border-accent-peach/40 pt-10 pb-16 font-body text-bg-dark/90 leading-relaxed">
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The Orchestrator Landscape</h2>
+      <p class="mb-4">Airflow is the established standard with the biggest community. Dagster is the newer contender that rethinks how orchestration should work. Prefect is out there too, along with a few others. The question is not "which is objectively best" because that depends entirely on your team, your stack, and how much pain you are willing to absorb during a migration.</p>
+      <p>The real question: does switching solve a problem you actually have, or does it just feel like progress?</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Assets vs Tasks: The Core Difference</h2>
+      <p class="mb-4">This is where Dagster diverges from Airflow in a fundamental way. Airflow thinks in tasks: do this, then do that, in this order. Dagster thinks in assets: this table depends on that table, materialise them when the upstream data changes.</p>
+      <p class="mb-4">The asset model is genuinely a better mental model for data pipelines. You are describing what your data should look like, not what steps to run. Lineage comes for free because the dependencies are explicit.</p>
+      <p>But switching from task-based thinking to asset-based thinking is not trivial. If your team has been writing Airflow DAGs for years, it is a real mindset shift. And if you have hundreds of existing DAGs, you are not rewriting those overnight.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Development Experience</h2>
+      <p class="mb-4">Dagster's local development story is better than Airflow's. You can run and test assets locally without spinning up a full scheduler. The type system catches errors before runtime. The UI is more modern and gives you better visibility into what is happening.</p>
+      <p class="mb-4">Testing is also different. Dagster was built with testability in mind from the start, which shows. Writing unit tests for Dagster assets feels more natural than testing Airflow operators.</p>
+      <p>Airflow has improved here with Airflow 2.x. But the gap is still real if you are comparing the day-to-day developer experience.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Community and Ecosystem</h2>
+      <p class="mb-4">This is where Airflow wins, and it is not close. The community is massive. If you hit a problem, someone has probably already solved it and posted the answer on Stack Overflow. The operator ecosystem covers almost every service you can think of. Managed options (MWAA, Cloud Composer, Astronomer) give you multiple deployment paths.</p>
+      <p>Dagster's community is growing, but it is still smaller. Fewer blog posts, fewer conference talks, fewer battle-tested patterns from production deployments at scale. When you hit a weird edge case at 2am, community size matters.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Why I Didn't Switch</h2>
+      <p class="mb-4">Not because Dagster is bad. It is not. The asset model is smart, the developer experience is better in several ways, and the architecture is more modern.</p>
+      <p class="mb-4">I did not switch because the cost of switching outweighed the benefits. Existing DAGs that work. A team trained on Airflow. Managed infrastructure already set up. Integration patterns already solved. The pain of Airflow is known and manageable. The pain of migrating is unpredictable and high.</p>
+      <p>If I were starting from scratch today with no existing codebase, would I consider Dagster? Honestly, yes. But "starting from scratch" is a luxury most teams do not have.</p>
+    </div>
+
+    <div class="border-t border-accent-peach/40 pt-8">
+      <h2 class="font-heading text-xl text-bg-dark mb-4">Key takeaways</h2>
+      <ul class="list-disc list-inside space-y-2 text-bg-dark/80 mb-4">
+        <li>Dagster's asset model is a genuinely different (and in many ways better) way to think about data pipelines.</li>
+        <li>The development and testing experience is ahead of Airflow's.</li>
+        <li>Community size and ecosystem maturity still favour Airflow by a wide margin.</li>
+        <li>Switching orchestrators is never just a technical decision. It is a team, process, and infrastructure decision.</li>
+        <li>The right tool depends on where you are starting from, not just where you want to end up.</li>
+      </ul>
+      <p class="text-bg-dark/50 italic text-sm">New is not always better. But ignoring what is new is how you end up stuck.</p>
+    </div>
+
+  </div>
+
+</BaseLayout>

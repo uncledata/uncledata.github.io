@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CTA from '../components/CTA.astro';
+---
+
+<BaseLayout
+  title="Consulting | Uncle Data"
+  description="Project-based data consulting for specific, scoped problems. Snowflake, dbt, Airflow."
+>
+
+  <section class="pt-16 pb-10 max-w-2xl">
+    <h1 class="font-heading text-4xl text-bg-dark leading-tight mb-4">
+      Project-based consulting, when advisory isn't the right shape.
+    </h1>
+  </section>
+
+  <section class="max-w-2xl space-y-6 pb-10 font-body text-bg-dark/90 leading-relaxed">
+
+    <p>
+      Most of the time, the right shape of engagement is <a href="/advisory" class="text-accent-coral hover:text-accent-coral-deep transition-colors underline underline-offset-2">advisory</a>: ongoing, open-ended, with someone senior who stays long enough to see changes land. But occasionally a company has a specific, scoped problem. Snowflake bills are out of control. The dbt project has accumulated a year of shortcuts that nobody fully understands. Airflow keeps falling over and nobody has time to properly diagnose it.
+    </p>
+
+    <p>
+      This page is for those cases. Not an ongoing relationship. A focused engagement with a clear problem, a clear deliverable, and a defined end.
+    </p>
+
+  </section>
+
+  <section class="max-w-2xl border-t border-accent-peach/40 py-8 space-y-6 font-body text-bg-dark/90 leading-relaxed">
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-4">What I'll actually do</h2>
+      <p>
+        Audit, recommend, and where the engagement allows, implement. The specific things I do most often: Snowflake cost and architecture reviews, dbt project health checks, Airflow stability and design assessments, data infrastructure audits for teams that have outgrown their original setup. Every engagement produces written output, shared with the team, so the value stays after the work is done.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-4">What I won't do</h2>
+      <p>
+        Long-term maintenance. Production code ownership. Anything that looks like a contract development role. If the problem requires someone embedded on the team for months, that's either advisory or a full-time hire.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-4">How to inquire</h2>
+      <p>
+        Email me with the problem, the rough size of the system, and what you've already tried. That's enough to tell whether it's a good fit.
+      </p>
+    </div>
+
+  </section>
+
+  <p class="font-body text-sm text-bg-dark/60 max-w-2xl mb-4">
+    If the problem is bigger than a single project, or you're not sure where to start, <a href="/advisory" class="text-accent-coral hover:text-accent-coral-deep transition-colors">advisory</a> is probably the better fit.
+  </p>
+
+  <CTA subject="Consulting inquiry" />
+
+</BaseLayout>

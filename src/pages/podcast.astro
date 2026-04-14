@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// NOTE FOR TOMAS: Replace SPOTIFY_SHOW_ID below with the actual Spotify show ID.
+// Find it in the Spotify embed code (Share -> Embed -> copy the src URL).
+// The show ID is the alphanumeric string in: https://open.spotify.com/embed/show/SPOTIFY_SHOW_ID
+// Your Spotify link: https://podcasters.spotify.com/pod/show/duomenu-dede
+const spotifyShowId = 'SPOTIFY_SHOW_ID'; // <-- replace this
+
+// NOTE FOR TOMAS: Add your Apple Podcasts link here if available.
+const applePodcastsUrl = ''; // e.g. 'https://podcasts.apple.com/...'
+---
+
+<BaseLayout
+  title="Podcast | Uncle Data"
+  description="The Uncle Data podcast: conversations with people who build and run data teams."
+>
+
+  <section class="pt-16 pb-8 max-w-2xl">
+    <h1 class="font-heading text-4xl text-bg-dark mb-4">The Uncle Data podcast.</h1>
+    <p class="font-body text-bg-dark/70 leading-relaxed">
+      Conversations with people who actually do the work of building and running data teams. New episodes irregularly.
+    </p>
+  </section>
+
+  <section class="max-w-2xl pb-10">
+    {spotifyShowId !== 'SPOTIFY_SHOW_ID' ? (
+      <iframe
+        style="border-radius:12px"
+        src={`https://open.spotify.com/embed/show/${spotifyShowId}`}
+        width="100%"
+        height="352"
+        frameborder="0"
+        allowfullscreen
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+        title="Uncle Data podcast on Spotify"
+      ></iframe>
+    ) : (
+      <div class="border border-accent-peach/60 rounded p-8 text-center">
+        <p class="font-body text-bg-dark/50 text-sm italic mb-4">
+          Spotify embed coming soon. Update the spotifyShowId variable in this file.
+        </p>
+        <a
+          href="https://podcasters.spotify.com/pod/show/duomenu-dede"
+          class="font-body text-sm text-accent-coral hover:text-accent-coral-deep transition-colors"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Listen on Spotify
+        </a>
+      </div>
+    )}
+  </section>
+
+  <section class="max-w-2xl pb-16">
+    <p class="font-body text-sm text-bg-dark/60">
+      Also on{' '}
+      <a
+        href="https://podcasters.spotify.com/pod/show/duomenu-dede"
+        class="text-accent-coral hover:text-accent-coral-deep transition-colors"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Spotify
+      </a>
+      {applePodcastsUrl && (
+        <>
+          ,{' '}
+          <a
+            href={applePodcastsUrl}
+            class="text-accent-coral hover:text-accent-coral-deep transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Apple Podcasts
+          </a>
+        </>
+      )}
+      {' '}and wherever you listen.
+    </p>
+    <p class="font-body text-sm text-bg-dark/60 mt-4">
+      Find more writing on{' '}
+      <a
+        href="https://uncledata.substack.com/?utm_source=site&utm_medium=cta&utm_campaign=podcast"
+        class="text-accent-coral hover:text-accent-coral-deep transition-colors"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Substack
+      </a>.
+    </p>
+  </section>
+
+</BaseLayout>

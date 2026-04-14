@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Technical Debt: When to Pay It Down vs. When to Just Live With It | Uncle Data"
+  description="PyCon Lithuania 2026 keynote. A framework for deciding when technical debt is worth fixing, with real war stories."
+>
+
+  <div class="pt-12 pb-4">
+    <a href="/talks" class="font-body text-sm text-bg-dark/40 hover:text-accent-coral transition-colors">&larr; All talks</a>
+  </div>
+
+  <section class="pb-8 max-w-2xl">
+    <p class="font-body text-xs text-bg-dark/40 uppercase tracking-wide mb-2">PyCon Lithuania 2026, Data Day track &middot; Keynote &middot; April 9, 2026 &middot; Vilnius</p>
+    <h1 class="font-heading text-3xl md:text-4xl text-bg-dark leading-tight mb-6">
+      Technical Debt: When to Pay It Down vs. When to Just Live With It
+    </h1>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-4">
+      Every team has code that makes them cringe. Legacy pipelines nobody dares touch, "temporary" tables that became the source of truth, and SQL queries that outlived three team leads. We call it technical debt, and the instinct is always the same: fix it.
+    </p>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-6">
+      But should we? After migrating from Redshift to Snowflake, learning PIG just to rewrite a pipeline deprecated months later, and surviving Airflow OOM kills, I have opinions. And maybe a framework slightly better than "it depends."
+    </p>
+    <a
+      href="/talks/pdfs/tech-debt-pycon-lt-2026.pdf"
+      class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-5 py-2.5 rounded transition-colors text-sm"
+    >
+      Download slides (PDF)
+    </a>
+  </section>
+
+  <div class="max-w-2xl space-y-10 border-t border-accent-peach/40 pt-10 pb-16 font-body text-bg-dark/90 leading-relaxed">
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The Code We Don't Talk About</h2>
+      <p class="mb-4">The talk opens with something everyone in the room recognizes. Every team has code in production that makes engineers uncomfortable. Legacy pipelines nobody dares touch. Temp tables that somehow became the source of truth. A SQL query over a thousand lines long that has outlived three team leads. The instinct, always, is to fix it. But should you?</p>
+      <p>Three definitions of technical debt, in order of usefulness. The textbook version: shortcuts taken for speed. The honest version: the gap between your current codebase and what you would build if you started today. The actionable version: debt that is actively slowing you down or costing money. That last one is the only definition worth acting on.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Personal Examples (Yes, Real Ones)</h2>
+      <p class="mb-4">Three real examples: an ETL pipeline from 2018 that nobody fully understands anymore, a temp table someone named "One Source of Truth" that became exactly that, and a SQL query over a thousand lines long that has quietly outlived everyone who wrote it. Not hypothetical. These are things I shipped.</p>
+      <p>The point is not shame. This is normal. It also opens up Martin Fowler's Debt Quadrant: deliberate vs inadvertent, reckless vs prudent. Most real-world debt lands in the prudent-inadvertent corner: "now we know how we should have done it." That is not failure. It is just how software evolves.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Deciding What to Fix</h2>
+      <p>Before touching any piece of debt, a two-by-two matrix: pain level on one axis, cost to fix on the other. High pain, low cost: fix it this sprint. High pain, high cost: make it a project and get buy-in. Low pain, low cost: do it when you have slack. Low pain, high cost: leave it alone. That last quadrant is where a lot of well-intentioned rewrites go wrong.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Three War Stories</h2>
+      <p class="mb-4"><strong class="text-bg-dark">Redshift to Snowflake.</strong> The before picture: three separate Airflow environments, no dev environment, pipelines slow enough to block daily reporting, costs that kept climbing. The migration took 10 to 12 months. After: one production Airflow environment, a proper dev environment, a 20% cost reduction, and engineers who actually liked working in the stack again. The pain was high, spread across the whole team, and the cost was manageable with proper planning. This one was worth doing.</p>
+      <p class="mb-4"><strong class="text-bg-dark">The PIG Pipeline.</strong> A legacy PIG job had been running weekly batch processing without incident for years. I learned PIG specifically to rewrite it in Spark. Cleaner code, modern patterns. The right way to do it. The rewrite took one to one and a half months. Five months after it shipped, the upstream data source was deprecated and the pipeline was killed. The lesson: working code that is ugly is often better than perfect code that took a long time to build. Before rewriting anything, ask whether the system it depends on is likely to survive.</p>
+      <p><strong class="text-bg-dark">Airflow Consolidation.</strong> Before: Airflow on EC2 with Docker-in-Docker, no dev environment, no infrastructure as code, pure ClickOps. After: MWAA, a single managed environment, CI/CD pipelines, autoscaling, better monitoring. Mostly. The catch: the old debt was replaced with new debt. Worker autoscaling still hits bottlenecks at peak load. OOM kills still happen, just in a different place. Migrating away from debt does not mean debt-free. You trade one set of problems for a hopefully better set.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Five Questions Before You Refactor</h2>
+      <p class="mb-4">A checklist worth keeping before starting any refactor:</p>
+      <ol class="list-decimal list-inside space-y-2 text-bg-dark/80 mb-4">
+        <li>Is this actually causing pain, or just offending your engineering sensibilities?</li>
+        <li>Can you measure the cost?</li>
+        <li>What is the opportunity cost of fixing it now versus building the next feature instead?</li>
+        <li>Will it get worse if you leave it?</li>
+        <li>Can you get stakeholder buy-in?</li>
+      </ol>
+      <p>If you cannot answer yes to most of these, you probably should not start.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Stable vs Compounding Debt</h2>
+      <p>Not all debt compounds. A single ugly function nobody touches is stable. An isolated legacy system that works is stable. Bad architecture that delivers reliably is stable. Missing tests, inconsistent patterns, and absent documentation are compounding, because they spread. The debt worth paying down is the kind that gets worse the longer you leave it.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Talking to Stakeholders</h2>
+      <p class="mb-4">"The code is messy" gets you nowhere. "We spend five engineer-hours per week on workarounds" gets a meeting. Drop "best practices" and "technical hygiene." Use numbers and consequences instead: a concrete cost per month, the specific feature this debt is blocking, the number of production incidents it caused in the last quarter. That is the language.</p>
+      <p>Four traps most teams fall into: the Perfection Trap (rewriting because it bothers you, not because it costs anything), the Shiny Object Trap (adopting new tech because it is new), the Ignore-It Trap (pretending the debt will pay itself down), and the Death March Trap (committing to a full rewrite with no incremental value along the way).</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Technical Debt in the Age of AI</h2>
+      <p class="mb-4">AI tools change the economics. Understanding legacy code faster, generating test coverage, migrating patterns at scale: things that used to be expensive are getting cheaper. More items shift from long strategic projects to quick wins on your matrix.</p>
+      <p>The risk is a new category of debt. Code that works but nobody on the team fully understands. Accepted suggestions that were not reviewed carefully. "It works" substituting for "it is maintainable." AI-generated debt compounds faster than hand-written debt, because the team did not write it and may not know how to change it.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Living with Debt Intentionally</h2>
+      <p class="mb-4">Document what you keep. Monitor it. Rotate ownership so knowledge does not concentrate in one person. Review the list quarterly. On the budget: 15 to 20 percent of each sprint is a reasonable baseline for debt work, as a continuous habit rather than a periodic big bang. Track the ratio by tagging work as Feature, Tech Debt, Bug, Toil, or Ad-hoc. If Tech Debt never appears in the tag list, something is being ignored.</p>
+      <p>The debt catalog is a simple spreadsheet: what, pain level, cost to fix, type, status. The point is not a perfect tracking system. The point is making the debt visible, so decisions about it are intentional rather than reactive.</p>
+    </div>
+
+    <div class="border-t border-accent-peach/40 pt-8">
+      <h2 class="font-heading text-xl text-bg-dark mb-4">Key takeaways</h2>
+      <ul class="list-disc list-inside space-y-2 text-bg-dark/80 mb-4">
+        <li>Not all debt needs to be paid down.</li>
+        <li>Measure pain and cost before refactoring.</li>
+        <li>Translate debt into business language your stakeholders understand.</li>
+        <li>Budget for debt work continuously, not in big-bang cleanups.</li>
+        <li>Document and monitor the debt you choose to keep.</li>
+        <li>AI lowers the cost of fixing debt but introduces new categories of it.</li>
+      </ul>
+      <p class="text-bg-dark/50 italic text-sm">Technical debt is not a failure. It is a tool. Use it wisely.</p>
+    </div>
+
+  </div>
+
+</BaseLayout>

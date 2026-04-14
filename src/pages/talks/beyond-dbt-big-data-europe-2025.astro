@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Beyond dbt: Modern SQL Transformation and Lineage | Uncle Data"
+  description="SQLGlot, SQLMesh, and real options for data lineage. Big Data Europe 2025."
+>
+
+  <div class="pt-12 pb-4">
+    <a href="/talks" class="font-body text-sm text-bg-dark/40 hover:text-accent-coral transition-colors">&larr; All talks</a>
+  </div>
+
+  <section class="pb-8 max-w-2xl">
+    <p class="font-body text-xs text-bg-dark/40 uppercase tracking-wide mb-2">Big Data Europe 2025 &middot; November 21, 2025 &middot; Vilnius</p>
+    <h1 class="font-heading text-3xl md:text-4xl text-bg-dark leading-tight mb-6">
+      Beyond dbt: Modern SQL Transformation and Lineage
+    </h1>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-4">
+      I had these slides polished and ready by August 2025. Then in September, Fivetran acquired Tobiko (the company behind SQLMesh). In October, Fivetran merged with dbt Labs. So half the talk became breaking news before I even gave it. Fun times.
+    </p>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-6">
+      This talk covers what sits beyond dbt in the SQL transformation space: SQLGlot as a parser, SQLMesh as an alternative framework, and the various ways you can collect data lineage without selling a kidney for an enterprise tool. Including the DIY route.
+    </p>
+    <a
+      href="/talks/pdfs/beyond-dbt-big-data-europe-2025.pdf"
+      class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-5 py-2.5 rounded transition-colors text-sm"
+    >
+      Download slides (PDF)
+    </a>
+  </section>
+
+  <div class="max-w-2xl space-y-10 border-t border-accent-peach/40 pt-10 pb-16 font-body text-bg-dark/90 leading-relaxed">
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The Elephant in the Room</h2>
+      <p class="mb-4">The timeline that made preparing this presentation interesting: slides done in August, Fivetran acquires Tobiko in September, Fivetran merges with dbt in October. By November, the landscape I was presenting on had shifted underneath me. The data lineage market is estimated at $1.5 to $2 billion and growing fast.</p>
+      <p>So the question becomes: do you buy a tool, use what your existing stack gives you, or build something yourself?</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">SQLGlot: The Parser That Powers Everything</h2>
+      <p class="mb-4">Before talking about SQLMesh, you need to understand SQLGlot. It is a SQL parser, transpiler, optimiser, and engine. Zero dependencies. Supports 24+ SQL dialects. Pure Python, and somehow still fast enough for production use.</p>
+      <p class="mb-4">What makes it interesting is the Abstract Syntax Tree (AST). You feed it a SQL query, it gives you back a tree structure representing every part of that query: the columns, the tables, the joins, the conditions. You can walk that tree, modify it, or use it to figure out which tables feed into which. That is the foundation of lineage.</p>
+      <p>Transpilation is the other killer feature. Write SQL in one dialect, output it in another. Snowflake to BigQuery. Postgres to Spark. It handles the syntax differences so you do not have to.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">SQLMesh: The Alternative to dbt</h2>
+      <p class="mb-4">SQLMesh is built on top of SQLGlot and takes a different approach from dbt in a few areas that matter. For one, it has a state database. It tracks what has been run, what changed, and what needs to be reprocessed. Not a log file, a proper database that SQLMesh uses to make decisions about incremental runs.</p>
+      <p class="mb-4">The model definitions look similar to dbt at first glance, but there are differences in how you declare grain and audits. Where dbt has you write YAML-based tests, SQLMesh lets you write SQL-based audits that feel more natural if you are already thinking in SQL.</p>
+      <p>The big differentiator: breaking change detection. In dbt, you catch breaking changes through code review, manually. SQLMesh detects them automatically and even suggests backfills. It also does virtual versioning, where instead of physically creating new tables for every model version, it uses views and metadata. Less storage, faster iterations.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Lineage: Your Options (and Their Tradeoffs)</h2>
+      <p class="mb-4">Four approaches to collecting data lineage, and none of them are perfect.</p>
+      <p class="mb-4"><strong class="text-bg-dark">Buy a tool.</strong> The easiest path. You get a UI, integrations, support. You also get a bill that scales with your data estate.</p>
+      <p class="mb-4"><strong class="text-bg-dark">dbt native lineage.</strong> Works out of the box. The UI gets messy on larger projects. Column-level lineage and impact analysis require dbt Cloud.</p>
+      <p class="mb-4"><strong class="text-bg-dark">Airflow with OpenLineage.</strong> Promising in theory. Not all operators have OpenLineage integrations. Custom operators require manual implementation. SQL parsing breaks on non-standard queries. Column-level lineage is not ready yet.</p>
+      <p><strong class="text-bg-dark">Dagster.</strong> Asset-based lineage is built into the framework. Smaller community, requires a mindset shift from task-based orchestration, and advanced features follow the same pattern as everyone else: extra features, extra money.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The DIY Route</h2>
+      <p class="mb-4">The second half of the talk is a walkthrough of building lineage yourself using SQLGlot. It starts simple: parse a query, extract the source and target tables. Then it gets more complex: nested CTEs, subqueries, multiple joins. Then it gets real: people who use SELECT * in production. That one got a laugh.</p>
+      <p class="mb-4">If you use dbt, compile your models first so you are working with resolved SQL rather than Jinja templates. Then run the parsed SQL through SQLGlot to extract the lineage graph.</p>
+      <p>The full process: extract SQL from your transformation layer, parse it with SQLGlot, push the lineage data to a database, and put an API on top. It is not a product. It is a tool you build and maintain yourself. But for teams that need lineage without the enterprise price tag, it works.</p>
+    </div>
+
+    <div class="border-t border-accent-peach/40 pt-8">
+      <h2 class="font-heading text-xl text-bg-dark mb-4">Key takeaways</h2>
+      <ul class="list-disc list-inside space-y-2 text-bg-dark/80 mb-4">
+        <li>SQLGlot is the engine behind SQLMesh and a powerful tool on its own for parsing and transpiling SQL.</li>
+        <li>SQLMesh offers automatic breaking change detection and virtual versioning, things dbt does not do natively.</li>
+        <li>Every lineage approach has tradeoffs. Buy vs build is a real question, not a default answer.</li>
+        <li>DIY lineage with SQLGlot is viable if you are willing to maintain it.</li>
+        <li>The dbt/Fivetran merger is going to reshape this space. Keep an eye on it.</li>
+      </ul>
+      <p class="text-bg-dark/50 italic text-sm">The tools are changing fast. The fundamentals (parsing SQL, tracking dependencies) are not.</p>
+    </div>
+
+  </div>
+
+</BaseLayout>
