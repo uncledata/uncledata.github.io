@@ -1,0 +1,18 @@
+---
+interface Props {
+  subject?: string;
+}
+
+const { subject = 'Advisory inquiry' } = Astro.props;
+const mailto = `mailto:tomas.peluritis@gmail.com?subject=${encodeURIComponent(subject)}`;
+---
+
+<section class="font-body my-12 py-10 px-6 text-center">
+  <h2 class="font-heading text-2xl text-bg-dark mb-4">Looking for a fractional data leader?</h2>
+  <a
+    href={mailto}
+    class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-6 py-3 rounded transition-colors"
+  >
+    Email me
+  </a>
+</section>

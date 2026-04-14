@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Data Engineer vs Software Engineer: Same Same But Different | Uncle Data"
+  description="The real differences between data and software engineering. Dev Tech 2025."
+>
+
+  <div class="pt-12 pb-4">
+    <a href="/talks" class="font-body text-sm text-bg-dark/40 hover:text-accent-coral transition-colors">&larr; All talks</a>
+  </div>
+
+  <section class="pb-8 max-w-2xl">
+    <p class="font-body text-xs text-bg-dark/40 uppercase tracking-wide mb-2">Dev Tech 2025 &middot; November 18, 2025 &middot; Lithuania</p>
+    <h1 class="font-heading text-3xl md:text-4xl text-bg-dark leading-tight mb-6">
+      Data Engineer vs Software Engineer: Same Same But Different
+    </h1>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-4">
+      Both roles write code. Both deploy to production. Both get paged at 2am. But the day-to-day reality is surprisingly different. This talk is about the DNA-level differences between data engineering and software engineering, the frustrations that come from misunderstanding those differences, and how the two roles can actually collaborate better.
+    </p>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-6">
+      Includes a rant about JSON blobs, because someone had to say it.
+    </p>
+    <a
+      href="/talks/pdfs/de-vs-swe-dev-tech-2025.pdf"
+      class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-5 py-2.5 rounded transition-colors text-sm"
+    >
+      Download slides (PDF)
+    </a>
+  </section>
+
+  <div class="max-w-2xl space-y-10 border-t border-accent-peach/40 pt-10 pb-16 font-body text-bg-dark/90 leading-relaxed">
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The DNA Difference</h2>
+      <p class="mb-4">Software engineers build applications. Data engineers build pipelines. Both write code, both think about architecture, both deal with failures. But the core mental model is different.</p>
+      <p class="mb-4">A software engineer thinks about user interactions, request-response cycles, and application state. A data engineer thinks about data flow, transformation logic, and historical state. A software engineer's deployment is: the new code is live. A data engineer's deployment is: the new code is live AND all the historical data needs to be consistent with it. Backfills are not optional.</p>
+      <p>This is not a hierarchy. Neither role is "harder" or "more technical." They are just different problems, and the sooner both sides understand that, the better they work together.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The JSON Blob Rant</h2>
+      <p class="mb-4">The scenario: a software engineer designs an API or a database schema where half the fields are stuffed into a JSON blob. Flexible! Schema-less! Easy to extend! From the application side, this makes sense. You parse the JSON in your code, grab the fields you need, and move on.</p>
+      <p class="mb-4">From the data engineering side, this is a nightmare. You now have to parse nested JSON in SQL, handle missing keys, deal with type inconsistencies (is that field a string or a number? depends on the day), and somehow build reliable reporting on top of it. Every time someone adds a new field to the blob, your pipeline might break silently.</p>
+      <p>The fix is not "never use JSON." The fix is: talk to your data team before shipping a schema that makes their life miserable. Five minutes of conversation saves weeks of workarounds.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Data Quality Is Everyone's Problem</h2>
+      <p class="mb-4">Software engineers have testing frameworks, type systems, and CI/CD pipelines that catch bugs before they reach production. Data engineers have SQL queries and hope. That is only slightly an exaggeration.</p>
+      <p class="mb-4">Data quality is fundamentally harder than application testing because your input is someone else's output, and you do not control it. Schemas change without warning. Volumes spike unexpectedly. NULL means "unknown," "not applicable," or "the upstream system broke," and you often cannot tell which one it is.</p>
+      <p>Data engineers need to adopt more software engineering practices: automated testing, CI/CD, code review, monitoring. Software engineers need to understand that the data they generate will be used downstream, and that small schema changes can cascade into big problems.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">How to Actually Collaborate</h2>
+      <p class="mb-4">Practical advice for teams that have both roles:</p>
+      <ul class="list-disc list-inside space-y-2 text-bg-dark/80 mb-4">
+        <li>Include data engineers in schema design reviews. Not after the fact. During.</li>
+        <li>Treat schema changes as breaking changes. Version them. Communicate them.</li>
+        <li>Data engineers: learn to write production-quality code. Not just "it works in a notebook" code.</li>
+        <li>Software engineers: learn what happens to your data after it leaves your application. The pipeline is real.</li>
+        <li>Shared on-call is a fast way to build empathy. Nothing teaches you about the other role like debugging their system at 3am.</li>
+      </ul>
+      <p>The roles are converging. The best data engineers write good code. The best software engineers think about data flow. The wall between the two is getting thinner, and that is a good thing.</p>
+    </div>
+
+    <div class="border-t border-accent-peach/40 pt-8">
+      <h2 class="font-heading text-xl text-bg-dark mb-4">Key takeaways</h2>
+      <ul class="list-disc list-inside space-y-2 text-bg-dark/80 mb-4">
+        <li>Data engineering and software engineering solve different problems with overlapping skills.</li>
+        <li>JSON blobs in schemas are convenient for applications and painful for data pipelines. Talk to each other.</li>
+        <li>Data quality is harder than application testing because you do not control your inputs.</li>
+        <li>Both roles benefit from adopting each other's best practices.</li>
+        <li>Collaboration starts with understanding, not tools.</li>
+      </ul>
+      <p class="text-bg-dark/50 italic text-sm">Same same, but different. And that is fine.</p>
+    </div>
+
+  </div>
+
+</BaseLayout>

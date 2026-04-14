@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CTA from '../components/CTA.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Tomas Peluritis",
+  "url": "https://uncledata.github.io",
+  "jobTitle": "Head of Data",
+  "description": "Fractional Head of Data. I help small companies build the data foundations that make everything else actually work.",
+  "sameAs": [
+    "https://www.linkedin.com/in/tomaspeluritis/",
+    "https://uncledata.substack.com/",
+  ],
+};
+---
+
+<BaseLayout
+  title="Uncle Data: Fractional Data Leadership"
+  description="Fractional Head of Data for companies that need senior data leadership without the full-time hire. Tomas Peluritis, Head of Data at Mediatech."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  {/* Hero */}
+  <section class="pt-16 pb-12">
+    <h1 class="font-heading text-4xl md:text-5xl text-bg-dark leading-tight mb-6 max-w-3xl">
+      Fractional Head of Data for companies that need senior data leadership without the full-time hire.
+    </h1>
+    <p class="font-body text-lg text-bg-dark/80 mb-10 max-w-2xl">
+      I help small companies build the data foundations that make everything else, hiring, AI, growth, actually work.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <a
+        href="mailto:tomas.peluritis@gmail.com?subject=Advisory%20inquiry"
+        class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-6 py-3 rounded transition-colors text-center"
+      >
+        Email me about advisory
+      </a>
+      <a
+        href="https://uncledata.substack.com/?utm_source=site&utm_medium=cta&utm_campaign=landing"
+        class="inline-block border border-bg-dark/30 text-bg-dark hover:border-accent-coral hover:text-accent-coral font-body px-6 py-3 rounded transition-colors text-center"
+      >
+        Read Uncle Data
+      </a>
+    </div>
+  </section>
+
+  {/* Proof bar */}
+  <section class="py-6 border-t border-b border-accent-peach/40">
+    <p class="font-body text-sm text-bg-dark/60 text-center leading-relaxed">
+      Head of Data at Mediatech &middot; PyCon LT 2026 keynote &middot; Uncle Data newsletter and podcast &middot; Previously Wix, kevin., HomeToGo
+    </p>
+  </section>
+
+  {/* What I do */}
+  <section class="py-16 max-w-2xl">
+    <h2 class="font-heading text-2xl text-bg-dark mb-8">What I do</h2>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed mb-6">
+      Fractional advisory means I sit alongside a company's data leadership on a recurring basis. I look at what they have, I ask the questions that don't normally get asked, and I propose changes. Then I stay long enough to help put those changes into practice. It's not a one-time audit. It's an ongoing working relationship with less of my time than a full hire costs.
+    </p>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed mb-6">
+      This works for small companies that need solid data foundations before they can do anything serious with AI. Companies where the data team is technically capable but the strategy, structure, or priorities aren't quite right. The kind of place where one good decision changes everything, and one bad one takes months to undo.
+    </p>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed">
+      I've spent years in senior data roles across companies at different stages and sizes. I write about this work publicly in Uncle Data, which means I think carefully about what's actually true versus what sounds good in a conference talk. I've seen enough teams from the inside to know the difference between a real data problem and a naming problem.
+    </p>
+  </section>
+
+  {/* Recent talks */}
+  <section class="py-12 border-t border-accent-peach/40">
+    <h2 class="font-heading text-2xl text-bg-dark mb-8">Recent talks</h2>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+      <a href="/talks/tech-debt-pycon-lt-2026" class="block group">
+        <article class="border border-accent-peach/60 rounded p-5 hover:border-accent-coral transition-colors h-full">
+          <p class="font-body text-xs text-bg-dark/50 mb-1 uppercase tracking-wide">PyCon LT 2026 &middot; Keynote</p>
+          <h3 class="font-heading text-lg text-bg-dark group-hover:text-accent-coral transition-colors mb-2">
+            Tech Debt in Data Teams
+          </h3>
+          <p class="font-body text-sm text-bg-dark/70 leading-relaxed">
+            How technical debt accumulates in data systems, why it's different from software debt, and what to do about it before it becomes a crisis.
+          </p>
+        </article>
+      </a>
+
+      <a href="/talks/beyond-dbt-big-data-europe-2025" class="block group">
+        <article class="border border-accent-peach/60 rounded p-5 hover:border-accent-coral transition-colors h-full">
+          <p class="font-body text-xs text-bg-dark/50 mb-1 uppercase tracking-wide">Big Data Europe 2025</p>
+          <h3 class="font-heading text-lg text-bg-dark group-hover:text-accent-coral transition-colors mb-2">
+            Beyond dbt
+          </h3>
+          <p class="font-body text-sm text-bg-dark/70 leading-relaxed">
+            What happens after you've adopted the standard tools, and why the hard problems in data engineering aren't tool problems.
+          </p>
+        </article>
+      </a>
+
+      <a href="/talks/de-vs-swe-dev-tech-2025" class="block group">
+        <article class="border border-accent-peach/60 rounded p-5 hover:border-accent-coral transition-colors h-full">
+          <p class="font-body text-xs text-bg-dark/50 mb-1 uppercase tracking-wide">Dev Tech 2025</p>
+          <h3 class="font-heading text-lg text-bg-dark group-hover:text-accent-coral transition-colors mb-2">
+            Data Engineering vs Software Engineering
+          </h3>
+          <p class="font-body text-sm text-bg-dark/70 leading-relaxed">
+            The real differences between how data engineers and software engineers think, and why the gap matters more than most teams realize.
+          </p>
+        </article>
+      </a>
+
+    </div>
+    <p class="mt-6">
+      <a href="/talks" class="font-body text-sm text-accent-coral hover:text-accent-coral-deep transition-colors">
+        All talks &rarr;
+      </a>
+    </p>
+  </section>
+
+  {/* CTA */}
+  <CTA />
+
+</BaseLayout>

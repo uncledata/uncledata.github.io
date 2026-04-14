@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Is It the End for Apache Airflow? | Uncle Data"
+  description="Airflow vs Dagster vs Mage with actual benchmarks. PyCon Lithuania 2023."
+>
+
+  <div class="pt-12 pb-4">
+    <a href="/talks" class="font-body text-sm text-bg-dark/40 hover:text-accent-coral transition-colors">&larr; All talks</a>
+  </div>
+
+  <section class="pb-8 max-w-2xl">
+    <p class="font-body text-xs text-bg-dark/40 uppercase tracking-wide mb-2">PyCon Lithuania 2023 &middot; May 2023 &middot; Vilnius</p>
+    <h1 class="font-heading text-3xl md:text-4xl text-bg-dark leading-tight mb-6">
+      Is It the End for Apache Airflow?
+    </h1>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-4">
+      Every year someone writes a blog post declaring Airflow dead. New orchestrators keep appearing. Dagster, Mage, Prefect, and whatever launched last week. So I did what any reasonable person would do: I compared them with actual benchmarks, real usage, and honest opinions from someone who has been running Airflow in production for years.
+    </p>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-6">
+      Spoiler: Airflow is not dead. But the competition is getting interesting.
+    </p>
+    <a
+      href="/talks/pdfs/airflow-end-pycon-lt-2023.pdf"
+      class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-5 py-2.5 rounded transition-colors text-sm"
+    >
+      Download slides (PDF)
+    </a>
+  </section>
+
+  <div class="max-w-2xl space-y-10 border-t border-accent-peach/40 pt-10 pb-16 font-body text-bg-dark/90 leading-relaxed">
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The Contestants</h2>
+      <p class="mb-4">Three orchestrators: Apache Airflow (the incumbent), Dagster (the challenger with a different philosophy), and Mage (the newer kid on the block). Each gets a fair look at what it does well and where it falls short.</p>
+      <p class="mb-4">Airflow is the one everyone knows. Battle-tested, massive community, more operators and integrations than you can count. Also: a scheduler that can be temperamental, a UI that shows its age, and deployment patterns that range from "works great" to "why is everything on fire?"</p>
+      <p class="mb-4">Dagster takes the software-defined asset approach. Define your data as code, with type checking, testability, and lineage built in. The developer experience is genuinely good. The trade-off: smaller community, fewer production war stories, and a learning curve if you are coming from Airflow.</p>
+      <p>Mage focuses on the data pipeline development experience with a notebook-style interface and built-in orchestration. The most opinionated of the three, which can be a strength or a limitation depending on your use case.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Actual Benchmarks</h2>
+      <p class="mb-4">Task scheduling latency, resource consumption, startup time, and how each tool handles a growing number of DAGs and tasks. The numbers are specific because vague comparisons are useless.</p>
+      <p class="mb-4">Airflow's scheduler has improved significantly with Airflow 2.x. The serial scheduling bottleneck from 1.x is largely gone. But it still consumes more resources at rest compared to Dagster and Mage, mainly because of the metadata database overhead and the web server running alongside the scheduler.</p>
+      <p>Dagster and Mage are lighter at small scale. The question is what happens when you have 500 DAGs with thousands of tasks and real production load. That is where Airflow's maturity shows.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Community Numbers Do Not Lie</h2>
+      <p class="mb-4">GitHub stars, Stack Overflow answers, PyPI downloads, Slack members, conference talks. Airflow wins every metric by a wide margin. That is not a value judgement, it is just what years of being the default gets you.</p>
+      <p>But keep in mind: Airflow also had years where it was the only real option. Dagster and Mage are growing fast. The gap is narrowing. It is just not narrow yet.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Managed Offerings</h2>
+      <p class="mb-4">Airflow has MWAA (AWS), Cloud Composer (GCP), and Astronomer. All battle-tested, all with real SLAs.</p>
+      <p>Dagster has Dagster Cloud. Mage has Mage Cloud. Both are newer, both are improving. But if your company requires a managed service with a track record, Airflow currently has more options and more production references.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">So, Is Airflow Dead?</h2>
+      <p class="mb-4">No. Not even close. The community is too large, the ecosystem too deep, and the managed offerings too mature. Airflow 2.x addressed the biggest complaints from the 1.x era. It is not perfect, but it is production-proven at a scale that the alternatives have not reached yet.</p>
+      <p class="mb-4">That said, the competition is real and healthy. Dagster is doing genuinely innovative work on the developer experience and the asset-based model. Mage is pushing the boundary on how approachable pipeline development can be. These tools are making Airflow better by forcing it to improve.</p>
+      <p>If you are starting fresh today with a small team and no existing infrastructure, Dagster is worth a serious look. If you have an existing Airflow deployment that works, switching for the sake of switching is probably not worth it. Use the right tool for where you are, not where the hype cycle says you should be.</p>
+    </div>
+
+    <div class="border-t border-accent-peach/40 pt-8">
+      <h2 class="font-heading text-xl text-bg-dark mb-4">Key takeaways</h2>
+      <ul class="list-disc list-inside space-y-2 text-bg-dark/80 mb-4">
+        <li>Airflow is not dead. It is the most deployed, most supported, and most battle-tested orchestrator available.</li>
+        <li>Dagster offers a better developer experience and a fundamentally different (asset-based) approach.</li>
+        <li>Mage makes pipeline development more accessible but is the newest of the three.</li>
+        <li>Community size and ecosystem maturity are real advantages, not just vanity metrics.</li>
+        <li>Competition is making all three tools better. That is good for everyone.</li>
+        <li>Choose based on your current situation, not on blog posts declaring things dead.</li>
+      </ul>
+      <p class="text-bg-dark/50 italic text-sm">The best orchestrator is the one your team can run, debug, and maintain in production. Everything else is a conference talk.</p>
+    </div>
+
+  </div>
+
+</BaseLayout>

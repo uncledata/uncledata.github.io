@@ -1,0 +1,139 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const talksByYear = [
+  {
+    year: '2026',
+    talks: [
+      {
+        slug: 'tech-debt-pycon-lt-2026',
+        title: 'Technical Debt: When to Pay It Down vs. When to Just Live With It',
+        event: 'PyCon Lithuania 2026',
+        date: 'April 9, 2026',
+        location: 'Vilnius',
+        type: 'keynote',
+        description: 'A framework for deciding when technical debt is actually worth fixing, with real war stories from Redshift migrations, Airflow consolidations, and a PIG pipeline nobody should have learned.',
+      },
+    ],
+  },
+  {
+    year: '2025',
+    talks: [
+      {
+        slug: 'beyond-dbt-big-data-europe-2025',
+        title: 'Beyond dbt: Modern SQL Transformation and Lineage',
+        event: 'Big Data Europe 2025',
+        date: 'November 21, 2025',
+        location: 'Vilnius',
+        type: 'talk',
+        description: 'SQLGlot, SQLMesh, and the real options for collecting data lineage without buying an enterprise tool. Including the DIY route.',
+      },
+      {
+        slug: 'de-vs-swe-dev-tech-2025',
+        title: 'Data Engineer vs Software Engineer: Same Same But Different',
+        event: 'Dev Tech 2025',
+        date: 'November 18, 2025',
+        location: 'Lithuania',
+        type: 'talk',
+        description: 'The DNA-level differences between data and software engineering, why JSON blobs in schemas are a data team\'s nightmare, and how the two roles can actually work together.',
+      },
+    ],
+  },
+  {
+    year: '2024',
+    talks: [
+      {
+        slug: 'data-lineage-pydata-vilnius-2024',
+        title: 'Data Lineage: Where "It Depends" Finally Gets an Answer',
+        event: 'PyData Vilnius',
+        date: 'November 28, 2024',
+        location: 'Vilnius',
+        type: 'talk',
+        description: 'dbt, Airflow OpenLineage, Dagster, and DIY with SQLGlot. Every lineage approach has tradeoffs. This is what they actually are.',
+      },
+      {
+        slug: 'write-audit-publish-pycon-lt-2024',
+        title: 'Write-Audit-Publish Pattern in Modern Data Pipelines',
+        event: 'PyCon Lithuania 2024',
+        date: 'April 5, 2024',
+        location: 'Vilnius',
+        type: 'talk',
+        description: 'How to stage data, audit it, and only publish it to production when the checks pass. Covering DIY SQL, Snowflake Dynamic Tables, and Apache Iceberg branching.',
+      },
+    ],
+  },
+  {
+    year: '2023',
+    talks: [
+      {
+        slug: 'airflow-end-pycon-lt-2023',
+        title: 'Is It the End for Apache Airflow?',
+        event: 'PyCon Lithuania 2023',
+        date: 'May 2023',
+        location: 'Vilnius',
+        type: 'talk',
+        description: 'Airflow vs Dagster vs Mage, with actual benchmarks. Spoiler: Airflow is not dead. The competition is getting interesting.',
+      },
+      {
+        slug: 'why-not-dagster-pydata-vilnius-2023',
+        title: 'Why Not Dagster',
+        event: 'PyData Vilnius',
+        date: 'November 21, 2023',
+        location: 'Vilnius',
+        type: 'talk',
+        description: 'An honest look at Dagster from an Airflow user\'s perspective. What it does better, where Airflow still wins, and why switching orchestrators is never just a technical decision.',
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Talks | Uncle Data"
+  description="Conference talks on data engineering, leadership, and tooling by Tomas Peluritis."
+>
+
+  <section class="pt-16 pb-6">
+    <h1 class="font-heading text-4xl text-bg-dark mb-6">Talks</h1>
+    <p class="font-body text-bg-dark/70 max-w-2xl">
+      I've been speaking at PyCon Lithuania for four years now and at a few other places along the way. Slides and recordings where they exist.
+    </p>
+  </section>
+
+  <div class="space-y-12 pb-16">
+    {talksByYear.map(({ year, talks }) => (
+      <section>
+        <h2 class="font-heading text-xl text-bg-dark/40 mb-4">{year}</h2>
+        <div class="space-y-4">
+          {talks.map((talk) => (
+            <a href={`/talks/${talk.slug}`} class="block group">
+              <div class="border-l-2 border-accent-peach/60 group-hover:border-accent-coral pl-5 py-1 transition-colors">
+                <p class="font-body text-xs text-bg-dark/40 mb-1">
+                  {talk.event} &middot; {talk.date} &middot; {talk.location}
+                  {talk.type === 'keynote' && <span class="ml-2 text-accent-coral">(keynote)</span>}
+                </p>
+                <h3 class="font-heading text-lg text-bg-dark group-hover:text-accent-coral transition-colors mb-1">
+                  {talk.title}
+                </h3>
+                <p class="font-body text-sm text-bg-dark/60 leading-relaxed max-w-2xl">
+                  {talk.description}
+                </p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <p class="font-body text-sm text-bg-dark/60 border-t border-accent-peach/40 pt-8 pb-16">
+    Conference organizers: I'm always happy to hear about events.{' '}
+    <a
+      href="mailto:tomas.peluritis@gmail.com?subject=Speaking%20inquiry"
+      class="text-accent-coral hover:text-accent-coral-deep transition-colors"
+    >
+      Email me.
+    </a>
+  </p>
+
+</BaseLayout>

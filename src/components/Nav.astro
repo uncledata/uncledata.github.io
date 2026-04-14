@@ -1,0 +1,131 @@
+---
+const currentPath = Astro.url.pathname;
+
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/advisory', label: 'Advisory' },
+  { href: '/writing', label: 'Writing' },
+  { href: '/talks', label: 'Talks' },
+  { href: '/podcast', label: 'Podcast' },
+  { href: '/about', label: 'About' },
+];
+
+function isActive(href: string, current: string): boolean {
+  if (href === '/') return current === '/';
+  return current.startsWith(href);
+}
+---
+
+<nav class="relative font-body">
+  <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3">
+      <img src="/images/logo.png" alt="Uncle Data" class="h-10 w-10" />
+      <span class="font-heading text-xl text-bg-dark">Uncle Data</span>
+    </a>
+
+    {/* Desktop nav */}
+    <ul class="hidden md:flex items-center gap-8">
+      {links.map(({ href, label }) => (
+        <li>
+          <a
+            href={href}
+            class:list={[
+              'text-bg-dark hover:text-accent-coral transition-colors',
+              isActive(href, currentPath) && 'font-bold border-b-2 border-accent-coral',
+            ]}
+          >
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {/* Mobile burger button */}
+    <button
+      id="menu-toggle"
+      class="md:hidden p-2 text-bg-dark"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+
+  {/* Mobile slide-in menu */}
+  <div
+    id="mobile-menu"
+    class="fixed inset-0 z-50 hidden"
+  >
+    {/* Backdrop */}
+    <div id="menu-backdrop" class="absolute inset-0 bg-black/40"></div>
+
+    {/* Panel */}
+    <div
+      id="menu-panel"
+      class="absolute top-0 right-0 h-full w-64 bg-bg-light shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out"
+    >
+      <div class="flex justify-end p-4">
+        <button id="menu-close" class="p-2 text-bg-dark" aria-label="Close menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <ul class="flex flex-col gap-4 px-6">
+        {links.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class:list={[
+                'block text-lg text-bg-dark hover:text-accent-coral transition-colors',
+                isActive(href, currentPath) && 'font-bold text-accent-coral',
+              ]}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const panel = document.getElementById('menu-panel');
+  const close = document.getElementById('menu-close');
+  const backdrop = document.getElementById('menu-backdrop');
+
+  function openMenu() {
+    menu?.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      panel?.classList.remove('translate-x-full');
+      panel?.classList.add('translate-x-0');
+    });
+    toggle?.setAttribute('aria-expanded', 'true');
+    toggle?.setAttribute('aria-label', 'Close menu');
+  }
+
+  function closeMenu() {
+    panel?.classList.remove('translate-x-0');
+    panel?.classList.add('translate-x-full');
+    toggle?.setAttribute('aria-expanded', 'false');
+    toggle?.setAttribute('aria-label', 'Open menu');
+    panel?.addEventListener('transitionend', () => {
+      menu?.classList.add('hidden');
+    }, { once: true });
+  }
+
+  toggle?.addEventListener('click', openMenu);
+  close?.addEventListener('click', closeMenu);
+  backdrop?.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      closeMenu();
+    }
+  });
+</script>

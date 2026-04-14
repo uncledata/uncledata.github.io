@@ -1,0 +1,223 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CTA from '../components/CTA.astro';
+
+const roles = [
+  {
+    title: 'Head of Data',
+    company: 'Mediatech',
+    period: 'Nov 2024 – present',
+    note: 'Leading a team across data engineering, analytics, and data science.',
+  },
+  {
+    title: 'Data Engineer',
+    company: 'Wix',
+    period: 'Aug 2023 – Oct 2024',
+    note: 'Data collection for AB testing platform. Internal data lineage solution using SQLGlot and log parsing.',
+  },
+  {
+    title: 'Head of Data',
+    company: 'kevin.',
+    period: 'Mar 2022 – Jun 2023',
+    note: 'Built the data platform from scratch: Snowflake, dbt, Airflow, CI/CD, documentation.',
+  },
+  {
+    title: 'Senior Data Engineer / Team Lead',
+    company: 'HomeToGo',
+    period: 'Jun 2021 – Mar 2022',
+    note: 'Led the central DWH team. Redshift to Snowflake migration. Pipelines to Airflow 2.',
+  },
+  {
+    title: 'Data Engineering Team Lead',
+    company: 'Wix',
+    period: 'Feb 2020 – Jun 2021',
+    note: 'Led a multi-location data engineering team across Vilnius, Kyiv, and Tel Aviv.',
+  },
+  {
+    title: 'Data Developer',
+    company: 'Wix',
+    period: 'Sep 2018 – Feb 2020',
+    note: 'PySpark ETLs, Presto SQL, Python automation.',
+  },
+];
+
+const earlierRoles = [
+  { company: 'Visma Lietuva', period: 'Nov 2016 – Aug 2018', note: 'Data mining, forecasting, EDW modeling (Data Vault), ETL.' },
+  { company: 'SEB', period: 'Feb 2016 – Nov 2016', note: 'Informatica ETL, DIH/DQ tooling.' },
+  { company: 'Finance Engineering', period: 'Jul 2013 – Jan 2016', note: 'DWH, ETL, OLAP, reporting (SQL Server, SharePoint).' },
+  { company: 'Seesam Insurance', period: 'Nov 2012 – Jul 2013', note: 'Business analyst.' },
+];
+
+const talks = [
+  { title: 'Technical Debt: When to Pay It Down vs. When to Just Live With It', event: 'PyCon LT', year: '2026', type: 'Keynote' },
+  { title: 'Beyond dbt: Modern SQL Transformation and Lineage', event: 'Big Data Europe', year: '2025', type: 'Talk' },
+  { title: 'Data Engineer vs Software Engineer: Same Same But Different', event: 'Dev Tech', year: '2025', type: 'Talk' },
+  { title: 'Data Lineage: Where "It Depends" Finally Gets an Answer', event: 'PyData Vilnius', year: '2024', type: 'Talk' },
+  { title: 'Write-Audit-Publish Pattern in Modern Data Pipelines', event: 'PyCon LT', year: '2024', type: 'Talk' },
+  { title: 'Is It the End for Apache Airflow?', event: 'PyCon LT', year: '2023', type: 'Talk' },
+  { title: 'Why Not Dagster', event: 'PyData Vilnius', year: '2023', type: 'Talk' },
+];
+
+const skills = [
+  'Data Engineering', 'Technical Leadership', 'SQL', 'Python', 'PySpark',
+  'Apache Airflow', 'Snowflake', 'Redshift', 'dbt', 'CI/CD', 'Mentoring',
+];
+---
+
+<BaseLayout
+  title="About | Uncle Data"
+  description="Tomas Peluritis: Head of Data at Mediatech, writer, fractional data advisor."
+>
+
+  {/* Header with photo */}
+  <section class="pt-16 pb-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+    <img
+      src="/images/Me.jpeg"
+      alt="Tomas Peluritis"
+      class="w-24 h-24 rounded-full object-cover flex-shrink-0"
+    />
+    <div>
+      <h1 class="font-heading text-4xl text-bg-dark mb-1">Tomas Peluritis</h1>
+      <p class="font-body text-bg-dark/60 text-lg">Head of Data, writer, fractional advisor.</p>
+    </div>
+  </section>
+
+  {/* Bio - DRAFT: this section needs Tomas's review and rewrite before publishing */}
+  <section class="max-w-2xl space-y-6 pb-16 font-body text-bg-dark/90 leading-relaxed">
+
+    <p>
+      I'm Head of Data at Mediatech, leading a team across data engineering, analytics, and data science. Alongside the day job, I run an independent advisory practice for small companies that need senior data thinking without a full-time hire. And I write Uncle Data, a newsletter and podcast about the parts of data work that don't fit neatly in the documentation.
+    </p>
+
+    <p>
+      I've been in data work since 2012, though the first few years were BI and SQL rather than what the field calls data engineering today. I joined Wix in 2018 as a Data Developer, writing PySpark jobs and SQL against Presto. Two years later I was leading a multi-location team across Vilnius, Kyiv, and Tel Aviv. That was the first time I understood clearly that the job of a senior data person isn't really about the code.
+    </p>
+
+    <p>
+      The move to HomeToGo in 2021 was a shorter one. I led the central data warehouse team through a Redshift to Snowflake migration, which is easy to describe and hard to live through. We shipped it. I came out with a much more precise understanding of what "migration" actually involves when the pipelines are still running during it.
+    </p>
+
+    <p>
+      kevin. was the most formative role I've had. I joined as Head of Data with a blank slate: no existing platform, no inherited architecture, no processes to maintain or argue with. We built Snowflake, dbt, Airflow, the CI/CD setup, the documentation conventions, the way the team worked. The freedom was real and so was the pressure. By the time I left, there was a platform that the team actually understood and could extend without calling me.
+    </p>
+
+    <p>
+      Then a deliberate year back at Wix as an individual contributor. I worked on data collection for their A/B testing platform and built an internal data lineage tool using SQLGlot and log parsing. After a few years in leadership roles, going back to engineering for a bit clarified things I thought I already understood. Mediatech followed, and it's been the right place to land.
+    </p>
+
+    <p>
+      Most data problems aren't technical. The tools are good enough. The actual issues are usually about priorities, communication, and the gap between what the data team thinks they're building and what the rest of the company thinks they're getting. I've watched this pattern repeat at every company I've worked at, including the technically strong ones. The implication is that the main job of a data leader is translation: between what's possible, what the business needs, and what the team can realistically build right now. Get that wrong and clean pipelines won't save you.
+    </p>
+
+    <p>
+      I prefer simple solutions over clever ones. Not because I can't do clever, but because I've seen enough "clever" systems at 2am to have strong feelings about it.
+    </p>
+
+    <p>
+      I started writing Uncle Data because I wanted to say things that don't fit in a conference talk. Opinions about how data teams actually work, what advice is actually useful versus what's theoretically correct, what nobody tells you when you become a data lead for the first time. The podcast is an extension of that, conversations with people who do this work and have thought carefully about it. I don't report on metrics. The point is to write things I'd want to read.
+    </p>
+
+    <p>
+      I've spoken at PyCon Lithuania four times, including the 2026 keynote. Big Data Europe, PyData Vilnius, Dev Tech. The talks started as a way to force myself to think something through carefully enough to explain it to a room of people. That's still the reason.
+    </p>
+
+    <p>
+      I live in Vilnius with my family. Outside of work I play Magic: The Gathering (a game of decision-making under incomplete information, if you want to be serious about it) and run a 3D printer, which is mostly an excellent way to turn filament into objects that solve problems you didn't quite have.
+    </p>
+
+    <p>
+      If any of this resonates, feel free to reach out.
+    </p>
+
+  </section>
+
+  {/* CV section */}
+  <section class="border-t border-accent-peach/40 pt-12 pb-8 max-w-2xl">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="font-heading text-2xl text-bg-dark">CV</h2>
+      <a
+        href="https://www.linkedin.com/in/tomaspeluritis/"
+        class="font-body text-sm text-accent-coral hover:text-accent-coral-deep transition-colors border border-accent-coral/40 hover:border-accent-coral px-4 py-2 rounded"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        LinkedIn (up to date)
+      </a>
+    </div>
+
+    {/* Current + recent roles */}
+    <div class="mb-10">
+      <h3 class="font-heading text-base text-bg-dark/50 uppercase tracking-widest text-xs mb-4">Experience</h3>
+      <div class="space-y-6">
+        {roles.map((role) => (
+          <div class="flex flex-col sm:flex-row sm:gap-6">
+            <p class="font-body text-xs text-bg-dark/40 sm:w-36 flex-shrink-0 mt-1">{role.period}</p>
+            <div>
+              <p class="font-heading text-bg-dark">{role.title}</p>
+              <p class="font-body text-sm text-accent-coral mb-1">{role.company}</p>
+              <p class="font-body text-sm text-bg-dark/70">{role.note}</p>
+            </div>
+          </div>
+        ))}
+
+        {/* Earlier roles collapsed */}
+        <div class="flex flex-col sm:flex-row sm:gap-6">
+          <p class="font-body text-xs text-bg-dark/40 sm:w-36 flex-shrink-0 mt-1">2012 – 2018</p>
+          <div class="space-y-2">
+            {earlierRoles.map((r) => (
+              <p class="font-body text-sm text-bg-dark/70">
+                <span class="text-bg-dark">{r.company}</span> ({r.period}): {r.note}
+              </p>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Speaking */}
+    <div class="mb-10">
+      <h3 class="font-heading text-base text-bg-dark/50 uppercase tracking-widest text-xs mb-4">Speaking</h3>
+      <div class="space-y-2">
+        {talks.map((talk) => (
+          <div class="flex flex-col sm:flex-row sm:gap-6">
+            <p class="font-body text-xs text-bg-dark/40 sm:w-36 flex-shrink-0 mt-0.5">{talk.event} {talk.year}</p>
+            <p class="font-body text-sm text-bg-dark/80">
+              {talk.title}
+              {talk.type === 'Keynote' && <span class="ml-2 text-xs text-accent-coral">(keynote)</span>}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Uncle Data */}
+    <div class="mb-10">
+      <h3 class="font-heading text-base text-bg-dark/50 uppercase tracking-widest text-xs mb-4">Writing & Podcast</h3>
+      <div class="flex flex-col sm:flex-row sm:gap-6">
+        <p class="font-body text-xs text-bg-dark/40 sm:w-36 flex-shrink-0 mt-1">2022 – present</p>
+        <div>
+          <p class="font-heading text-bg-dark">Uncle Data</p>
+          <p class="font-body text-sm text-bg-dark/70 mt-1">
+            Newsletter on <a href="https://uncledata.substack.com/" class="text-accent-coral hover:text-accent-coral-deep transition-colors">Substack</a> and podcast on Spotify. Data engineering, leadership, and the things nobody puts in the docs.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* Skills */}
+    <div>
+      <h3 class="font-heading text-base text-bg-dark/50 uppercase tracking-widest text-xs mb-4">Skills</h3>
+      <div class="flex flex-wrap gap-2">
+        {skills.map((skill) => (
+          <span class="font-body text-xs text-bg-dark/70 border border-accent-peach/60 px-3 py-1 rounded-full">
+            {skill}
+          </span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* CTA */}
+  <CTA subject="Advisory inquiry" />
+
+</BaseLayout>

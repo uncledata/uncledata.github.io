@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CTA from '../components/CTA.astro';
+---
+
+<BaseLayout
+  title="Advisory | Uncle Data"
+  description="Fractional data advisory for small companies that need their data foundations to actually work."
+>
+
+  {/* Headline */}
+  <section class="pt-16 pb-10 max-w-2xl">
+    <h1 class="font-heading text-4xl text-bg-dark leading-tight mb-4">
+      Fractional advisory for small companies that need their data foundations to actually work.
+    </h1>
+  </section>
+
+  {/* What this is */}
+  <section class="py-8 max-w-2xl">
+    <h2 class="font-heading text-xl text-bg-dark mb-6">What this is</h2>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed mb-6">
+      Advisory engagements are mostly async. You get one monthly deep-dive session, in person or on video, where everything important gets discussed at once. Full days are available when something needs concentrated attention. The shape is open-ended because real engagements don't fit a clean three-month box.
+    </p>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed mb-6">
+      In practice, that means I review your architecture, your team setup, your priorities, and the things people are quietly worried about. I propose changes. Then I stick around long enough to help you put them into practice. The difference between advisory and a one-off audit is that I'm still there when the implementation gets complicated.
+    </p>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed">
+      Most of the work happens in between sessions. Reviewing documents, thinking through decisions, answering specific questions that come up. The monthly session is where we make sure the important things aren't slipping.
+    </p>
+  </section>
+
+  {/* Who this is for */}
+  <section class="py-8 border-t border-accent-peach/40 max-w-2xl">
+    <h2 class="font-heading text-xl text-bg-dark mb-6">Who this is for</h2>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed mb-6">
+      Small companies, not enterprise. The kind of place where the data team is small enough that one good decision changes everything, and one bad one breaks things for months. Where there's no committee to consult on every call and no process for everything. Where something can actually change because someone senior said it should.
+    </p>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed mb-6">
+      Companies that want to do something with AI and are realizing the basics need to come first. The data isn't where it should be. The pipelines are fragile. The team is capable but pulled in too many directions. The ambition is real, and so is the gap between where the data is now and where it needs to be.
+    </p>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed mb-6">
+      Companies where the existing data lead is good but isolated. Someone technically strong who could use a senior thinking partner, not a replacement. Someone who knows what needs to change but doesn't have anyone senior to pressure-test ideas with.
+    </p>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed">
+      Not for companies that want a contractor to write production code. Not for companies that want someone to manage their team for them. Not for audit-and-leave engagements where someone comes in, produces a document, and disappears. If any of those is the actual need, see <a href="/consulting" class="text-accent-coral hover:text-accent-coral-deep transition-colors underline underline-offset-2">consulting</a> instead.
+    </p>
+  </section>
+
+  {/* How an engagement works */}
+  <section class="py-8 border-t border-accent-peach/40 max-w-2xl">
+    <h2 class="font-heading text-xl text-bg-dark mb-6">How an engagement works</h2>
+
+    <div class="space-y-8">
+      <div>
+        <h3 class="font-heading text-base text-bg-dark mb-3">Cadence</h3>
+        <p class="font-body text-bg-dark/90 leading-relaxed">
+          Mostly async. One monthly deep-dive session, in person or on video, where everything important gets discussed at once. Full days available when something specific needs concentrated attention. The async-first shape exists because most data leadership work is thinking and writing, not meetings.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="font-heading text-base text-bg-dark mb-3">Scope</h3>
+        <p class="font-body text-bg-dark/90 leading-relaxed">
+          Reviews of what exists, recommendations for what to change, and active involvement in putting changes into practice. Architecture, hiring, prioritization, team structure. The boring things that actually decide whether a data team ships.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="font-heading text-base text-bg-dark mb-3">What I don't do</h3>
+        <p class="font-body text-bg-dark/90 leading-relaxed">
+          Manage the team directly. Write production code as a contractor. Sell anyone on AI before the basics are in place. If those are the requirements, we're not the right fit, and I'll say so up front.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* How to start */}
+  <section class="py-8 border-t border-accent-peach/40 max-w-2xl">
+    <h2 class="font-heading text-xl text-bg-dark mb-6">How to start</h2>
+
+    <p class="font-body text-bg-dark/90 leading-relaxed">
+      Email me with a few sentences about your company, your current data setup, and what's bothering you. If it sounds like a fit, we get on a call. If it doesn't, I'll tell you and probably point you toward someone who's better suited.
+    </p>
+  </section>
+
+  {/* Link to consulting */}
+  <p class="font-body text-sm text-bg-dark/60 max-w-2xl mb-4">
+    Looking for a scoped, project-based engagement instead? See <a href="/consulting" class="text-accent-coral hover:text-accent-coral-deep transition-colors">consulting</a>.
+  </p>
+
+  {/* CTA */}
+  <CTA subject="Advisory inquiry" />
+
+</BaseLayout>
