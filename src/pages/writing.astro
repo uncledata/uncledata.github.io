@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// Fetch posts from Substack RSS at build time.
-// Falls back to an empty list with a Substack link if the feed is unreachable.
+// Manually curated post list. Add new posts here as they are published on Substack.
+// Substack URL pattern: https://uncledata.substack.com/p/<slug>
+// TODO: Tomas — fill in the full post archive, sorted newest first.
 
 interface Post {
   title: string;
@@ -11,76 +12,26 @@ interface Post {
   description: string;
 }
 
-function stripHtml(html: string): string {
-  return html
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&#39;/g, "'")
-    .replace(/&quot;/g, '"')
-    .replace(/&nbsp;/g, ' ')
-    .trim();
-}
-
-function excerpt(text: string, maxLen = 160): string {
-  if (text.length <= maxLen) return text;
-  return text.slice(0, maxLen).replace(/\s+\S*$/, '') + '...';
-}
-
-function parseCdata(raw: string): string {
-  const m = raw.match(/<!\[CDATA\[([\s\S]*?)\]\]>/);
-  return m ? m[1] : raw;
-}
-
-let posts: Post[] = [];
-let fetchError = false;
-
-try {
-  const res = await fetch('https://uncledata.substack.com/feed');
-  if (res.ok) {
-    const xml = await res.text();
-
-    const itemRegex = /<item>([\s\S]*?)<\/item>/g;
-    let match: RegExpExecArray | null;
-
-    while ((match = itemRegex.exec(xml)) !== null) {
-      const item = match[1];
-
-      // Title
-      const titleRaw = item.match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? '';
-      const title = parseCdata(titleRaw).trim();
-
-      // URL: prefer <link>, fall back to <guid>
-      const linkRaw = item.match(/<link>(https?:\/\/[^<]+)<\/link>/)?.[1]
-        ?? item.match(/<guid[^>]*>(https?:\/\/[^<]+)<\/guid>/)?.[1]
-        ?? '';
-      const url = linkRaw.trim();
-
-      // Description: strip HTML, truncate
-      const descRaw = item.match(/<description>([\s\S]*?)<\/description>/)?.[1] ?? '';
-      const description = excerpt(stripHtml(parseCdata(descRaw)));
-
-      // Date
-      const pubDateRaw = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ?? '';
-      const date = pubDateRaw
-        ? new Date(pubDateRaw.trim()).toLocaleDateString('en-US', {
-            month: 'long',
-            year: 'numeric',
-          })
-        : '';
-
-      if (title && url) {
-        posts.push({ title, url, date, description });
-      }
-    }
-  } else {
-    fetchError = true;
-  }
-} catch {
-  fetchError = true;
-}
+const posts: Post[] = [
+  {
+    title: 'What I actually do as a fractional data leader',
+    url: 'https://uncledata.substack.com/p/what-i-actually-do-as-a-fractional',
+    date: 'March 2025',
+    description: 'The job title is new. The work is not.',
+  },
+  {
+    title: 'Tech debt is a management problem',
+    url: 'https://uncledata.substack.com/p/tech-debt-is-a-management-problem',
+    date: 'February 2025',
+    description: 'Why rewrite campaigns fail and what to do instead.',
+  },
+  {
+    title: 'Airflow war stories',
+    url: 'https://uncledata.substack.com/p/airflow-war-stories',
+    date: 'January 2025',
+    description: 'Things that go wrong when you run Airflow at scale, and how to survive them.',
+  },
+];
 ---
 
 <BaseLayout
@@ -96,40 +47,24 @@ try {
   </section>
 
   <section class="max-w-2xl pb-16">
-    {posts.length > 0 ? (
-      <div class="divide-y divide-accent-peach/40">
-        {posts.map((post) => (
-          <div class="py-6">
-            <p class="font-body text-xs text-bg-dark/40 mb-1">{post.date}</p>
-            <a
-              href={post.url}
-              class="font-heading text-lg text-bg-dark hover:text-accent-coral transition-colors block mb-1"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {post.title}
-            </a>
-            {post.description && (
-              <p class="font-body text-sm text-bg-dark/60 leading-relaxed">{post.description}</p>
-            )}
-          </div>
-        ))}
-      </div>
-    ) : (
-      <div class="py-10 border-t border-accent-peach/40">
-        <p class="font-body text-bg-dark/50 text-sm">
-          {fetchError ? 'Could not load posts right now. Find everything on ' : 'No posts yet. Check '}
+    <div class="divide-y divide-accent-peach/40">
+      {posts.map((post) => (
+        <div class="py-6">
+          <p class="font-body text-xs text-bg-dark/40 mb-1">{post.date}</p>
           <a
-            href="https://uncledata.substack.com/?utm_source=site&utm_medium=cta&utm_campaign=writing"
-            class="text-accent-coral hover:text-accent-coral-deep transition-colors"
+            href={post.url}
+            class="font-heading text-lg text-bg-dark hover:text-accent-coral transition-colors block mb-1"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Substack
-          </a>.
-        </p>
-      </div>
-    )}
+            {post.title}
+          </a>
+          {post.description && (
+            <p class="font-body text-sm text-bg-dark/60 leading-relaxed">{post.description}</p>
+          )}
+        </div>
+      ))}
+    </div>
   </section>
 
   <section class="border-t border-accent-peach/40 py-10 max-w-2xl">
