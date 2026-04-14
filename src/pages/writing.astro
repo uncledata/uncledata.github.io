@@ -1,19 +1,86 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// NOTE FOR TOMAS: This list needs your input.
-// Add your Substack post slugs, titles, dates, and one-line descriptions below.
-// Substack URL pattern: https://uncledata.substack.com/p/<slug>
-// Sorted newest first.
-const posts = [
-  // Add posts here. Example:
-  // {
-  //   title: 'The post title',
-  //   slug: 'the-post-slug',
-  //   date: 'April 2026',
-  //   description: 'One sentence about what the post is.',
-  // },
-];
+// Fetch posts from Substack RSS at build time.
+// Falls back to an empty list with a Substack link if the feed is unreachable.
+
+interface Post {
+  title: string;
+  url: string;
+  date: string;
+  description: string;
+}
+
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&nbsp;/g, ' ')
+    .trim();
+}
+
+function excerpt(text: string, maxLen = 160): string {
+  if (text.length <= maxLen) return text;
+  return text.slice(0, maxLen).replace(/\s+\S*$/, '') + '...';
+}
+
+function parseCdata(raw: string): string {
+  const m = raw.match(/<!\[CDATA\[([\s\S]*?)\]\]>/);
+  return m ? m[1] : raw;
+}
+
+let posts: Post[] = [];
+let fetchError = false;
+
+try {
+  const res = await fetch('https://uncledata.substack.com/feed');
+  if (res.ok) {
+    const xml = await res.text();
+
+    const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+    let match: RegExpExecArray | null;
+
+    while ((match = itemRegex.exec(xml)) !== null) {
+      const item = match[1];
+
+      // Title
+      const titleRaw = item.match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? '';
+      const title = parseCdata(titleRaw).trim();
+
+      // URL: prefer <link>, fall back to <guid>
+      const linkRaw = item.match(/<link>(https?:\/\/[^<]+)<\/link>/)?.[1]
+        ?? item.match(/<guid[^>]*>(https?:\/\/[^<]+)<\/guid>/)?.[1]
+        ?? '';
+      const url = linkRaw.trim();
+
+      // Description: strip HTML, truncate
+      const descRaw = item.match(/<description>([\s\S]*?)<\/description>/)?.[1] ?? '';
+      const description = excerpt(stripHtml(parseCdata(descRaw)));
+
+      // Date
+      const pubDateRaw = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ?? '';
+      const date = pubDateRaw
+        ? new Date(pubDateRaw.trim()).toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric',
+          })
+        : '';
+
+      if (title && url) {
+        posts.push({ title, url, date, description });
+      }
+    }
+  } else {
+    fetchError = true;
+  }
+} catch {
+  fetchError = true;
+}
 ---
 
 <BaseLayout
@@ -24,7 +91,7 @@ const posts = [
   <section class="pt-16 pb-6 max-w-2xl">
     <h1 class="font-heading text-4xl text-bg-dark mb-6">Writing</h1>
     <p class="font-body text-bg-dark/70 leading-relaxed">
-      Posts on data engineering, leadership, and the things they don't put in the docs. Most of these are also on the Uncle Data Substack, which is where the comments and discussion live.
+      Posts on data engineering, leadership, and the things they don't put in the docs. Discussion lives on Substack.
     </p>
   </section>
 
@@ -35,21 +102,23 @@ const posts = [
           <div class="py-6">
             <p class="font-body text-xs text-bg-dark/40 mb-1">{post.date}</p>
             <a
-              href={`https://uncledata.substack.com/p/${post.slug}`}
+              href={post.url}
               class="font-heading text-lg text-bg-dark hover:text-accent-coral transition-colors block mb-1"
               target="_blank"
               rel="noopener noreferrer"
             >
               {post.title}
             </a>
-            <p class="font-body text-sm text-bg-dark/60 leading-relaxed">{post.description}</p>
+            {post.description && (
+              <p class="font-body text-sm text-bg-dark/60 leading-relaxed">{post.description}</p>
+            )}
           </div>
         ))}
       </div>
     ) : (
       <div class="py-10 border-t border-accent-peach/40">
-        <p class="font-body text-bg-dark/50 text-sm italic">
-          Post list coming soon. In the meantime, find everything on{' '}
+        <p class="font-body text-bg-dark/50 text-sm">
+          {fetchError ? 'Could not load posts right now. Find everything on ' : 'No posts yet. Check '}
           <a
             href="https://uncledata.substack.com/?utm_source=site&utm_medium=cta&utm_campaign=writing"
             class="text-accent-coral hover:text-accent-coral-deep transition-colors"
