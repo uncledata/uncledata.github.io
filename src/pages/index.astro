@@ -1,9 +1,26 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CTA from '../components/CTA.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Tomas Peluritis",
+  "url": "https://uncledata.github.io",
+  "jobTitle": "Head of Data",
+  "description": "Fractional Head of Data. I help small companies build the data foundations that make everything else actually work.",
+  "sameAs": [
+    "https://www.linkedin.com/in/tomaspeluritis/",
+    "https://uncledata.substack.com/",
+  ],
+};
 ---
 
-<BaseLayout title="Uncle Data: Fractional Data Leadership">
+<BaseLayout
+  title="Uncle Data: Fractional Data Leadership"
+  description="Fractional Head of Data for companies that need senior data leadership without the full-time hire. Tomas Peluritis, Head of Data at Mediatech."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   {/* Hero */}
   <section class="pt-16 pb-12">
