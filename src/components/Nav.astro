@@ -46,6 +46,7 @@ function isActive(href: string, current: string): boolean {
       class="md:hidden p-2 text-bg-dark"
       aria-label="Open menu"
       aria-expanded="false"
+      aria-controls="mobile-menu"
     >
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -106,12 +107,14 @@ function isActive(href: string, current: string): boolean {
       panel?.classList.add('translate-x-0');
     });
     toggle?.setAttribute('aria-expanded', 'true');
+    toggle?.setAttribute('aria-label', 'Close menu');
   }
 
   function closeMenu() {
     panel?.classList.remove('translate-x-0');
     panel?.classList.add('translate-x-full');
     toggle?.setAttribute('aria-expanded', 'false');
+    toggle?.setAttribute('aria-label', 'Open menu');
     panel?.addEventListener('transitionend', () => {
       menu?.classList.add('hidden');
     }, { once: true });
@@ -120,4 +123,9 @@ function isActive(href: string, current: string): boolean {
   toggle?.addEventListener('click', openMenu);
   close?.addEventListener('click', closeMenu);
   backdrop?.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      closeMenu();
+    }
+  });
 </script>

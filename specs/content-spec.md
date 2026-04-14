@@ -3,7 +3,7 @@
 **Owner:** Tomas
 **Status:** Draft v1
 **Last updated:** April 2026
-**Companion docs:** `product-spec.md`, `technical-spec.md`
+**Companion docs:** `product-spec.md`, `tech-spec.md`
 
 ## How to use this doc
 
