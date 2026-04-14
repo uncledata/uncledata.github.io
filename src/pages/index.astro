@@ -23,7 +23,8 @@ const jsonLd = {
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   {/* Hero */}
-  <section class="pt-16 pb-12">
+  <section class="pt-16 pb-12 flex flex-col md:flex-row md:items-center md:gap-12">
+    <div class="flex-1">
     <h1 class="font-heading text-4xl md:text-5xl text-bg-dark leading-tight mb-6 max-w-3xl">
       Fractional Head of Data for companies that need senior data leadership without the full-time hire.
     </h1>
@@ -43,6 +44,18 @@ const jsonLd = {
       >
         Read Uncle Data
       </a>
+    </div>
+    </div>
+    <div class="hidden md:block w-56 h-56 rounded-full overflow-hidden flex-shrink-0">
+      <img
+        src="/images/talks/infotrust-snowflake.jpg"
+        alt="Tomas Peluritis"
+        class="w-full h-full object-cover object-top"
+        width="448"
+        height="714"
+        loading="eager"
+        decoding="async"
+      />
     </div>
   </section>
 
