@@ -4,9 +4,7 @@
 <meta charset="utf-8" />
 <title>Your Codebase Has a Context Problem (And So Does Your AI) — VilniusPy</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="vendor/fonts/jetbrains-mono.css" rel="stylesheet" />
 <style>
   /* ------------------------------------------------------------------
      Type stack
@@ -1435,54 +1433,45 @@ Ask in <span class="c-md-code">#backend-help</span>. We don't bite.</div>
 })();
 </script>
 
-<!-- React + Babel for the Tweaks panel only -->
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-<script type="text/babel" src="tweaks-panel.jsx"></script>
+<!-- React for the Tweaks panel only (vendored locally; JSX precompiled). -->
+<script src="vendor/react.production.min.js"></script>
+<script src="vendor/react-dom.production.min.js"></script>
+<script src="tweaks-panel.js"></script>
 
 <div id="tweaks-root"></div>
-<script type="text/babel">
+<script>
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "theme": "dark",
   "accent": "#E8845A",
   "accentSecondary": "#f5cdb8"
 }/*EDITMODE-END*/;
 
-function TweaksApp(){
+function TweaksApp() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-
   React.useEffect(() => {
     document.body.classList.toggle('theme-light', t.theme === 'light');
     document.documentElement.style.setProperty('--coral', t.accent);
     document.documentElement.style.setProperty('--peach', t.accentSecondary);
   }, [t.theme, t.accent, t.accentSecondary]);
-
-  return (
-    <TweaksPanel>
-      <TweakSection label="Theme" />
-      <TweakRadio
-        label="Background"
-        value={t.theme}
-        options={['dark', 'light']}
-        onChange={(v) => setTweak('theme', v)}
-      />
-      <TweakSection label="Accents" />
-      <TweakColor
-        label="Coral (emphasis)"
-        value={t.accent}
-        onChange={(v) => setTweak('accent', v)}
-      />
-      <TweakColor
-        label="Peach (bars)"
-        value={t.accentSecondary}
-        onChange={(v) => setTweak('accentSecondary', v)}
-      />
-    </TweaksPanel>
+  return React.createElement(TweaksPanel, null,
+    React.createElement(TweakSection, { label: "Theme" }),
+    React.createElement(TweakRadio, {
+      label: "Background", value: t.theme, options: ['dark', 'light'],
+      onChange: v => setTweak('theme', v),
+    }),
+    React.createElement(TweakSection, { label: "Accents" }),
+    React.createElement(TweakColor, {
+      label: "Coral (emphasis)", value: t.accent,
+      onChange: v => setTweak('accent', v),
+    }),
+    React.createElement(TweakColor, {
+      label: "Peach (bars)", value: t.accentSecondary,
+      onChange: v => setTweak('accentSecondary', v),
+    }),
   );
 }
 
-ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<TweaksApp />);
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(React.createElement(TweaksApp));
 </script>
 
 </body>
