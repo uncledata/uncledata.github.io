@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Your Codebase Has a Context Problem (And So Does Your AI) | Uncle Data"
+  description="VilniusPy 2026 talk. AI coding tools fail the same way new hires fail without onboarding. The fix is the same: write your conventions down where the AI will read them, and the humans benefit too."
+>
+
+  <div class="pt-12 pb-4">
+    <a href="/talks" class="font-body text-sm text-bg-dark/40 hover:text-accent-coral transition-colors">&larr; All talks</a>
+  </div>
+
+  <section class="pb-8 max-w-2xl">
+    <p class="font-body text-xs text-bg-dark/40 uppercase tracking-wide mb-2">VilniusPy &middot; May 21, 2026 &middot; Vilnius</p>
+    <h1 class="font-heading text-3xl md:text-4xl text-bg-dark leading-tight mb-6">
+      Your Codebase Has a Context Problem (And So Does Your AI)
+    </h1>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-4">
+      You paste code into an AI tool. The output compiles. It also ignores every convention your project has, picks the wrong test framework, and writes raw SQL in a codebase that has been ORM-only for years. The instinct is to blame the model.
+    </p>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-6">
+      It is not a model problem. It is a context problem, and the fix is the same one you would apply for a new hire on day one. Write the conventions down where the tool will read them. The side effect is that your humans get the onboarding doc you have been meaning to write for years.
+    </p>
+    <div class="flex flex-wrap gap-3">
+      <a
+        href="/talks/decks/context-problem-vilniuspy-2026/"
+        class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-5 py-2.5 rounded transition-colors text-sm"
+      >
+        View slides
+      </a>
+    </div>
+  </section>
+
+  <div class="max-w-2xl space-y-10 border-t border-accent-peach/40 pt-10 pb-16 font-body text-bg-dark/90 leading-relaxed">
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The Problem</h2>
+      <p class="mb-4">The opening is something most of the room has lived through. You ask an AI tool for help, the output is technically correct, and yet none of it fits. Relative imports in a project that has been absolute-only for three years. <code>unittest</code> classes in a <code>pytest</code> codebase. <code>snake_case</code> next to <code>CamelCase</code> in the same file. The natural reaction is "the AI is bad at this," but that is the wrong frame.</p>
+      <p>The tool does not know how you work because nothing told it. It sees files, syntax, and the tokens you typed in the prompt. You see conventions, history, and the reason that one module is shaped weirdly. We would never onboard a human this way, with no README, no style guide, no walkthrough. We do exactly that to AI tools every day and then act surprised when the output is generic.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">What Context Actually Means</h2>
+      <p class="mb-4">Context is not abstract. It breaks into five categories any Python dev recognises. Project structure (where things live, how modules are organised). Conventions (naming, import order, error handling, typing). Tooling (<code>pytest</code> or <code>unittest</code>, <code>ruff</code> or <code>flake8</code>, <code>uv</code> or <code>pip</code>). Domain knowledge (what the app actually does, what the key abstractions are). And the "do not touch" zones (legacy code, workarounds with reasons, things that look wrong but are intentional).</p>
+      <p>Two versions of the same function, side by side, make this concrete. One is correct but contextless: sync, generic exception, dict response, no types. The other is correct and in your style: async, custom exception, Pydantic out, fully typed. Both work. Only one passes review. The asymmetry is the punchline. For people, we wrote the style guide, the CONTRIBUTING.md, the day-one walkthrough. For the AI, we wrote the prompt and got annoyed it did not know.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The AI Config Layer</h2>
+      <p class="mb-4">There are files AI coding tools actually read at session start, automatically. <code>CLAUDE.md</code> for Claude Code. <code>.github/copilot-instructions.md</code> for GitHub Copilot. <code>.cursor/rules/</code> for Cursor, scoped by glob. <code>AGENTS.md</code> as the increasingly cross-tool standard. Same idea, four flavours.</p>
+      <p class="mb-4">A real <code>CLAUDE.md</code> for a Python project is forty lines of plain markdown. Stack: Python 3.12, FastAPI, SQLAlchemy 2.0, Postgres. Tests: pytest plus pytest-asyncio. Package manager: uv. Then a Conventions section (Pydantic out, never raw dicts. <code>Annotated</code> for DI. Async everywhere. Errors raise from <code>app/exceptions.py</code>). A Testing section (fixtures in <code>conftest.py</code>, factory_boy for factories, integration tests hit a real DB). A Don't section (no <code>datetime.now()</code>, no new deps without checking <code>pyproject.toml</code>, no raw SQL). That is the whole trick.</p>
+      <p class="mb-4">The before-and-after is the easiest sell. Same prompt ("add an endpoint to list invoices by status") run against the same model. Without the config: Flask-style decorator, sync function, raw SQL string with the status interpolated in (yes, that is also a SQL injection), dict response. With the config: FastAPI router, async function, SQLAlchemy <code>select()</code>, Pydantic out, fully typed. Same model, very different output. The config did the work.</p>
+      <p>The next step is the prompt itself. A wish ("add an endpoint for invoices") leaves the AI guessing everything, and you guessing what it guessed. A better prompt names the route, the stack, and points to the spec. A spec-driven prompt is a one-page markdown file: goal, contract, edge cases, tests first. Write the spec, ask the AI to critique it, generate failing tests from it, then ask for code that passes. Commit the spec next to the code so the next session can read it again. Skills, the reusable instruction bundles, are the optional polish on top once you have the basics. The CLAUDE.md is the eighty-twenty.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The Side Effect Nobody Talks About</h2>
+      <p class="mb-4">Writing a CLAUDE.md forces you to articulate the conventions you have been carrying in your head. Most projects run on oral tradition. The senior dev knows which import style we use, which ORM patterns we prefer, why that one module is structured differently. Nobody else does, until the senior dev leaves.</p>
+      <p>Once it is written down, the same file does double duty. Copilot reads it on every completion, so your tab-complete starts matching your code review. The new hire reads it on day one. Future-you reads it six months later when you have forgotten why imports are absolute. One file, three audiences. The deeper truth is that your codebase docs probably are not good enough for the humans either. The AI just made it obvious.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">What Still Breaks</h2>
+      <p class="mb-4">Worth being honest about the limits. Context windows are not infinite, so large codebases still confuse the tool. CLAUDE.md is a primer, not the whole repo. Domain nuance ("why this customer is special") is not a markdown bullet. The AI will still confidently write plausible-looking wrong code, hallucinate APIs that almost exist, and get away with it if you do not read the diff. Config files drift, too. If you update a convention and forget to update the file, you are training the AI on stale patterns.</p>
+      <p>None of this turns the AI into a senior dev. The promise is not "AI writes your app." The promise is "AI writes the boring parts correctly instead of almost correctly." That is still a real shift.</p>
+    </div>
+
+    <div class="border-t border-accent-peach/40 pt-8">
+      <h2 class="font-heading text-xl text-bg-dark mb-4">Three things to do tomorrow</h2>
+      <p class="mb-4">Small, concrete, do them on one project rather than all of them.</p>
+      <ol class="list-decimal list-inside space-y-2 text-bg-dark/80 mb-6">
+        <li>Add a CLAUDE.md (or copilot-instructions.md, or a Cursor rules file) to one project.</li>
+        <li>Write down the conventions you enforce in code review but never documented.</li>
+        <li>Notice how much of your project's knowledge lives only in people's heads.</li>
+      </ol>
+      <p class="text-bg-dark/50 italic text-sm">The best documentation you'll write this year might be for a machine. The humans will thank you too.</p>
+    </div>
+
+  </div>
+
+</BaseLayout>

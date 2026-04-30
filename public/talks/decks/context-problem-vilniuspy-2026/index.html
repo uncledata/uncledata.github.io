@@ -1,0 +1,1489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Your Codebase Has a Context Problem (And So Does Your AI) — VilniusPy</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ------------------------------------------------------------------
+     Type stack
+     - Headings: Georgia (per spec)
+     - Body: Calibri (per spec, with sensible fallbacks)
+     - Code: JetBrains Mono
+     ------------------------------------------------------------------ */
+  :root{
+    --bg: #1A1A2E;            /* warm midnight */
+    --bg-light: #FBF6F3;      /* light alt */
+    --ink: #FBF6F3;
+    --ink-dim: rgba(251,246,243,.66);
+    --ink-faint: rgba(251,246,243,.38);
+    --rule: rgba(251,246,243,.16);
+    --peach: #f5cdb8;         /* accent bars */
+    --coral: #E8845A;         /* accent text on dark */
+    --coral-deep: #C4643C;    /* deep coral */
+    --blue: #3B7DD8;          /* secondary */
+
+    --serif: Georgia, "Times New Roman", serif;
+    --sans:  Calibri, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --mono:  "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  html, body { margin:0; padding:0; background:#000; color:var(--ink); font-family:var(--sans); }
+
+  deck-stage { background:#000; }
+
+  /* Every slide is a section. The deck-stage component absolutely positions it. */
+  section.slide{
+    box-sizing:border-box;
+    width:1920px; height:1080px;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 100px 120px 96px;
+    display:flex; flex-direction:column;
+    position:relative;
+    overflow:hidden;
+    font-family: var(--sans);
+  }
+
+  /* Subtle slide footer w/ talk + speaker, bottom-right */
+  section.slide::after{
+    content: "Your Codebase Has a Context Problem  ·  Tomas Peluritis  ·  VilniusPy";
+    position:absolute; right:120px; bottom:44px;
+    font-family: var(--sans);
+    font-size: 24px; letter-spacing:.04em;
+    color: var(--ink-faint);
+  }
+  section.slide.no-footer::after{ content:none; }
+
+  /* Slide number top-right */
+  .slide-num{
+    position:absolute; top:64px; right:120px;
+    font-family: var(--mono);
+    font-size: 26px; letter-spacing:.12em;
+    color: var(--ink-faint);
+  }
+
+  /* Eyebrow / kicker */
+  .kicker{
+    font-family: var(--mono);
+    font-size: 26px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--coral);
+    display:flex; align-items:center; gap:18px;
+    margin: 0 0 36px;
+  }
+  .kicker::before{
+    content:""; display:inline-block;
+    width:56px; height:6px; background:var(--peach); border-radius:3px;
+  }
+
+  /* Title / subtitle */
+  h1.title{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 110px;
+    line-height: 1.06;
+    letter-spacing: -.015em;
+    margin: 0;
+    text-wrap: pretty;
+  }
+  h2.title{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 76px;
+    line-height: 1.06;
+    letter-spacing: -.01em;
+    margin: 0;
+    text-wrap: pretty;
+  }
+  h2.title.smaller{ font-size:64px; }
+  .subtitle{
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink-dim);
+    font-size: 40px;
+    line-height: 1.25;
+    margin: 32px 0 0;
+    max-width: 1500px;
+    text-wrap: pretty;
+  }
+  .lead{
+    font-family: var(--sans);
+    font-size: 36px; line-height: 1.4;
+    color: var(--ink-dim);
+    max-width: 1400px;
+    margin: 28px 0 0;
+    text-wrap: pretty;
+  }
+
+  /* The coral underline accent for spans */
+  .hl{ color: var(--coral); }
+  .hl-deep{ color: var(--coral-deep); }
+  .hl-blue{ color: var(--blue); }
+  .hl-peach{ color: var(--peach); }
+
+  /* Section divider slides */
+  section.section-divider{
+    background: var(--bg);
+    padding: 100px 120px 96px;
+  }
+  .section-divider .section-num{
+    font-family: var(--mono);
+    font-size: 24px; letter-spacing:.22em;
+    color: var(--coral);
+    text-transform: uppercase;
+  }
+  .section-divider h2{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 160px;
+    line-height: .98;
+    letter-spacing: -.02em;
+    margin: 28px 0 0;
+    max-width: 1500px;
+    text-wrap: pretty;
+  }
+  .section-divider .section-meta{
+    font-family: var(--sans);
+    font-size: 28px;
+    color: var(--ink-dim);
+    margin-top: 40px;
+    max-width: 1100px;
+    line-height:1.4;
+  }
+  .section-divider .bar{
+    width: 120px; height: 10px; background: var(--peach); border-radius: 5px; margin-bottom: 32px;
+  }
+
+  /* Card with left accent bar — the spec's signature layout */
+  .card{
+    position:relative;
+    background: rgba(251,246,243,.04);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 36px 40px 36px 56px;
+    overflow:hidden;
+  }
+  .card::before{
+    content:""; position:absolute; left:0; top:0; bottom:0;
+    width:8px; background: var(--coral);
+  }
+  .card.peach::before{ background: var(--peach); }
+  .card.blue::before{ background: var(--blue); }
+  .card.deep::before{ background: var(--coral-deep); }
+
+  .card .card-title{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 36px;
+    margin: 0 0 14px;
+    line-height:1.1;
+  }
+  .card .card-body{
+    font-family: var(--sans);
+    font-size: 26px;
+    line-height: 1.4;
+    color: var(--ink-dim);
+    margin: 0;
+  }
+
+  /* Two-column grid */
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:40px; }
+  .three-col{ display:grid; grid-template-columns:repeat(3, 1fr); gap:32px; }
+  .five-grid{ display:grid; grid-template-columns:repeat(5, 1fr); gap:28px; }
+
+  /* Rule */
+  .rule{ height:1px; background:var(--rule); border:0; margin:0; }
+
+  /* Code block */
+  .code{
+    font-family: var(--mono);
+    background: #11111E;
+    border: 1px solid rgba(251,246,243,.08);
+    border-radius: 12px;
+    padding: 32px 36px;
+    font-size: 24px;
+    line-height: 1.55;
+    color: #EDEAE3;
+    overflow:hidden;
+    white-space: pre;
+    tab-size: 2;
+  }
+  .code.sm{ font-size: 24px; line-height: 1.5; padding: 28px 32px; }
+  .code .c-com{ color: #6B7088; font-style: italic; }
+  .code .c-key{ color: #E8845A; }      /* coral - keywords */
+  .code .c-str{ color: #f5cdb8; }      /* peach - strings */
+  .code .c-fn { color: #3B7DD8; }      /* blue  - function names */
+  .code .c-num{ color: #C4643C; }
+  .code .c-deco{ color:#C4643C; font-style:italic; }
+  .code .c-cls{ color:#f5cdb8; }
+  .code .c-self{ color:#6B7088; font-style:italic; }
+  .code .c-md-h{ color: #E8845A; font-weight:600; }
+  .code .c-md-b{ color: #FBF6F3; font-weight:600; }
+  .code .c-md-li{ color: #EDEAE3; }
+  .code .c-md-code{ color: #f5cdb8; }
+  .code .c-bad{ color: #ff8a6b; }
+  .code .c-good{ color: #79c98a; }
+
+  /* File-tab caption above code blocks */
+  .filename{
+    font-family: var(--mono);
+    font-size: 24px;
+    letter-spacing: .06em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin: 0 0 12px 6px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .filename::before{
+    content:""; width:10px; height:10px; border-radius:50%;
+    background:var(--peach);
+  }
+  .filename.bad::before{ background: #ff8a6b; }
+  .filename.good::before{ background: #79c98a; }
+
+  /* Big-stat layout */
+  .bignum{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 360px;
+    line-height: .9;
+    letter-spacing: -.04em;
+    color: var(--coral);
+  }
+
+  /* List, slide-style */
+  ul.checklist{
+    list-style:none; padding:0; margin: 24px 0 0;
+    font-family: var(--sans);
+    font-size: 34px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  ul.checklist li{
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+    display:flex; gap:28px; align-items:baseline;
+  }
+  ul.checklist li:last-child{ border-bottom:0; }
+  ul.checklist .nm{
+    font-family: var(--mono);
+    font-size: 26px;
+    color: var(--coral);
+    min-width: 56px;
+    letter-spacing: .08em;
+  }
+
+  /* Quote pullout */
+  .quote{
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 96px;
+    line-height: 1.1;
+    letter-spacing: -.01em;
+    color: var(--ink);
+    text-wrap: balance;
+    max-width: 1600px;
+  }
+  .quote .hl{ font-style: italic; }
+
+  /* Big VS / comparison header */
+  .vs-header{
+    display:flex; align-items:center; gap:24px;
+    font-family: var(--mono);
+    font-size: 26px; letter-spacing:.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+  }
+  .vs-header.bad{ color:#ff8a6b; }
+  .vs-header.good{ color:#79c98a; }
+  .vs-header .dot{ width:10px; height:10px; border-radius:50%; background: currentColor; }
+
+  /* Title slide treatment */
+  .title-slide{
+    background: var(--bg);
+    padding: 120px 120px 96px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .title-slide .brandline{
+    display:flex; align-items:center; gap:24px;
+    font-family: var(--mono);
+    color: var(--coral);
+    font-size: 26px; letter-spacing: .22em; text-transform: uppercase;
+  }
+  .title-slide .brandline .bar{
+    width:80px; height:10px; background:var(--peach); border-radius:5px;
+  }
+  .title-slide h1{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 140px;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    margin: 0;
+    max-width: 1700px;
+    text-wrap: pretty;
+  }
+  .title-slide h1 .and{ color: var(--coral); font-style: italic; font-weight: 500; }
+  .title-slide .speaker{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    border-top:1px solid var(--rule);
+    padding-top: 32px;
+    font-family: var(--sans);
+    font-size: 28px;
+    color: var(--ink-dim);
+  }
+  .title-slide .speaker .name{ color: var(--ink); font-weight: 600; }
+  .title-slide .speaker .handle{ color: var(--coral); }
+
+  /* "What AI sees vs You see" diagram */
+  .seebox{
+    display:flex; flex-direction:column; gap:14px;
+    padding: 28px 32px;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    background: rgba(251,246,243,.03);
+    min-height: 300px;
+  }
+  .seebox h3{
+    font-family: var(--mono);
+    font-size: 26px; letter-spacing:.12em; text-transform:uppercase;
+    color: var(--coral);
+    margin: 0 0 8px;
+  }
+  .seebox.you h3{ color: var(--peach); }
+  .seebox .row{
+    font-family: var(--mono);
+    font-size: 26px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+  }
+  .seebox.you .row{ color: var(--ink); }
+
+  /* Closing list */
+  .three-things{
+    display:grid; grid-template-columns: 1fr; gap: 32px;
+    margin-top: 32px;
+  }
+  .three-things .step{
+    display:grid; grid-template-columns: 140px 1fr; gap: 32px; align-items:baseline;
+    padding: 32px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .three-things .step:last-child{ border-bottom: 1px solid var(--rule); }
+  .three-things .num{
+    font-family: var(--serif);
+    font-size: 120px; line-height:.9;
+    color: var(--coral);
+    font-weight: 600;
+  }
+  .three-things .body{
+    font-family: var(--serif);
+    font-size: 44px;
+    line-height: 1.2;
+    color: var(--ink);
+    text-wrap: pretty;
+  }
+
+  /* Outro */
+  .outro{
+    background: var(--bg);
+    padding: 120px 120px 96px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .outro .thanks{
+    font-family: var(--serif);
+    font-size: 132px;
+    line-height: 1.02;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    color: var(--ink);
+    text-wrap: pretty;
+    max-width: 1680px;
+  }
+  .outro .thanks .hl{ color: var(--coral); }
+  .outro .meta{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-top: 1px solid var(--rule);
+    padding-top: 32px;
+    font-family: var(--sans);
+    font-size: 30px;
+    color: var(--ink-dim);
+  }
+  .outro .meta .name{ color: var(--ink); font-weight: 600; font-size: 40px; font-family: var(--serif); }
+
+  /* Generic helpers */
+  .stack { display:flex; flex-direction:column; }
+  .grow { flex: 1 1 auto; min-height: 0; }
+  .row { display:flex; }
+  .between{ justify-content:space-between; }
+  .center{ align-items:center; }
+  .small-cap{
+    font-family: var(--mono);
+    font-size: 22px; letter-spacing:.16em; text-transform:uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* Bullets list (used inside cards) */
+  ul.bul{
+    list-style:none; padding:0; margin:0;
+    font-family: var(--sans);
+    font-size: 26px;
+    line-height: 1.5;
+    color: var(--ink-dim);
+  }
+  ul.bul li{ padding: 6px 0; padding-left: 26px; position:relative; }
+  ul.bul li::before{
+    content:""; position:absolute; left:0; top:18px;
+    width:10px; height:10px; border-radius:50%;
+    background: var(--coral);
+  }
+
+  /* Diff highlights inside code blocks */
+  .code .add{ background: rgba(121,201,138,.12); display:inline-block; }
+  .code .del{ background: rgba(255,138,107,.12); display:inline-block; text-decoration: line-through; text-decoration-color: rgba(255,138,107,.55); }
+
+  /* Progressive reveal --------------------------------------------------
+     Mark a slide with [data-steps="N"] and decorate child elements with
+     [data-step="1"], [data-step="2"], etc. The current visible step is
+     reflected as a CSS variable --step on the slide. Items with a step
+     greater than the current step are dimmed-and-hidden.
+  ------------------------------------------------------------------- */
+  [data-step]{
+    transition: opacity .45s ease, transform .45s ease, filter .45s ease;
+  }
+  .slide[data-current-step] [data-step]{
+    opacity: 0; transform: translateY(14px); filter: blur(2px); pointer-events:none;
+  }
+  .slide[data-current-step="1"] [data-step="1"],
+  .slide[data-current-step="2"] [data-step="1"],
+  .slide[data-current-step="2"] [data-step="2"],
+  .slide[data-current-step="3"] [data-step="1"],
+  .slide[data-current-step="3"] [data-step="2"],
+  .slide[data-current-step="3"] [data-step="3"],
+  .slide[data-current-step="4"] [data-step="1"],
+  .slide[data-current-step="4"] [data-step="2"],
+  .slide[data-current-step="4"] [data-step="3"],
+  .slide[data-current-step="4"] [data-step="4"],
+  .slide[data-current-step="5"] [data-step="1"],
+  .slide[data-current-step="5"] [data-step="2"],
+  .slide[data-current-step="5"] [data-step="3"],
+  .slide[data-current-step="5"] [data-step="4"],
+  .slide[data-current-step="5"] [data-step="5"]{
+    opacity: 1; transform: none; filter: none; pointer-events:auto;
+  }
+
+  /* About-me speaker card ------------------------------------------ */
+  .about-grid{
+    display:grid; grid-template-columns: 520px 1px 1fr; gap: 80px;
+    align-items:center;
+    margin-top: 40px;
+  }
+  .about-grid .divider{
+    width:1px; align-self:stretch; background: var(--rule);
+  }
+  .about-photo{
+    width: 460px; height: 460px; border-radius: 50%;
+    background: #0F0F1F center/cover no-repeat;
+    border: 4px solid var(--peach);
+    box-shadow: 0 24px 80px rgba(0,0,0,.4);
+  }
+  .about-name{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 96px;
+    line-height: 1.0;
+    letter-spacing: -.015em;
+    margin: 0;
+  }
+  .about-role{
+    font-family: var(--serif);
+    font-size: 44px;
+    color: var(--ink);
+    margin: 24px 0 0;
+  }
+  .about-aka{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 32px;
+    color: var(--coral);
+    margin: 8px 0 0;
+  }
+  .about-links{
+    margin-top: 48px;
+    display:flex; flex-direction:column; gap: 22px;
+    font-family: var(--mono);
+    font-size: 28px;
+    color: var(--ink-dim);
+  }
+  .about-links .link{
+    display:flex; align-items:center; gap: 22px;
+  }
+  .about-links .ico{
+    width: 56px; height: 56px; border-radius: 12px;
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--serif); font-weight: 700; font-size: 30px;
+    color: #fff; flex-shrink: 0;
+  }
+  .about-links .ico.li{ background: #0A66C2; }
+  .about-links .ico.sp{ background: #1DB954; }
+  .about-links .ico.ss{ background: var(--coral-deep); }
+  .about-links .ico.web{ background: var(--blue); }
+
+  /* QR card — used on About + Outro to point at the talk's page */
+  .qr-card{
+    display:flex; align-items:center; gap: 36px;
+    padding: 28px 32px;
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    background: #FBF6F3;
+    color: #1A1A2E;
+  }
+  .qr-card .qr{
+    width: 220px; height: 220px; flex-shrink: 0;
+    background: #FBF6F3;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  .qr-card .qr svg{ width:100%; height:100%; display:block; }
+  .qr-card .qr-text .qr-kicker{
+    font-family: var(--mono);
+    font-size: 22px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--coral-deep);
+    margin: 0 0 10px;
+  }
+  .qr-card .qr-text .qr-url{
+    font-family: var(--mono);
+    font-size: 28px;
+    color: #1A1A2E;
+    margin: 0;
+    word-break: break-all;
+  }
+  .qr-card .qr-text .qr-meta{
+    font-family: var(--sans);
+    font-size: 22px;
+    color: rgba(26,26,46,.6);
+    margin: 12px 0 0;
+    line-height: 1.4;
+  }
+  .outro .qr-card{ max-width: 760px; }
+
+  /* Light-mode variant via tweaks */
+  body.theme-light section.slide{
+    background: var(--bg-light);
+    color: #1A1A2E;
+  }
+  body.theme-light .lead, body.theme-light .subtitle{ color: rgba(26,26,46,.7); }
+  body.theme-light .card{ background:#fff; border-color: rgba(26,26,46,.1); }
+  body.theme-light .card .card-body{ color: rgba(26,26,46,.7); }
+  body.theme-light .rule, body.theme-light ul.checklist li, body.theme-light .three-things .step,
+  body.theme-light .outro .meta, body.theme-light .title-slide .speaker{ border-color: rgba(26,26,46,.12); }
+  body.theme-light .small-cap, body.theme-light .slide-num, body.theme-light section.slide::after{
+    color: rgba(26,26,46,.45);
+  }
+  body.theme-light ul.bul{ color: rgba(26,26,46,.72); }
+  body.theme-light ul.checklist{ color:#1A1A2E; }
+  body.theme-light .seebox{ background: rgba(26,26,46,.03); border-color: rgba(26,26,46,.1);}
+  body.theme-light .seebox .row{ color: rgba(26,26,46,.6); }
+  body.theme-light .seebox.you .row{ color:#1A1A2E; }
+
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ================================================================
+       1 · TITLE
+       ================================================================ -->
+  <section class="slide title-slide no-footer" data-label="01 Title">
+    <div class="brandline">
+      <span class="bar"></span>
+      <span>VilniusPy  ·  Vilnius, LT</span>
+    </div>
+
+    <h1>
+      Your codebase has<br />
+      <span class="hl" style="display:block">a&nbsp;context&nbsp;problem.</span>
+      <span class="and">And so does</span> your AI.
+    </h1>
+
+    <div class="speaker">
+      <div>
+        <div class="name">Tomas Peluritis</div>
+        <div class="handle">Uncle Data</div>
+      </div>
+      <div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       2 · ABOUT — Speaker card
+       ================================================================ -->
+  <section class="slide" data-label="02 About">
+    <div class="slide-num">02</div>
+    <p class="kicker">Who's talking</p>
+
+    <div class="about-grid">
+      <div style="display:flex; justify-content:center">
+        <div class="about-photo" style="background-image:url('assets/tomas-photo.png')"></div>
+      </div>
+      <div class="divider"></div>
+      <div>
+        <h2 class="about-name">Tomas Peluritis</h2>
+        <p class="about-role">Head of Data <span style="color:var(--ink-faint)">@</span> Mediatech</p>
+        <p class="about-aka">aka Uncle Data</p>
+
+        <div class="about-links">
+          <div class="link"><span class="ico web">↗</span><span>uncledata.github.io</span></div>
+          <div class="link"><span class="ico li">in</span><span>linkedin.com/in/tomaspeluritis</span></div>
+          <div class="link"><span class="ico ss">S</span><span>uncledata.substack.com</span></div>
+          <div class="link"><span class="ico sp">♪</span><span>podcasters.spotify.com/pod/show/duomenu-dede</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       3 · SECTION DIVIDER — The Problem
+       ================================================================ -->
+  <section class="slide section-divider no-footer" data-label="03 Section · The Problem">
+    <div class="bar"></div>
+    <div class="section-num">Section 01 / 06</div>
+    <h2>The Problem</h2>
+    <div class="section-meta">
+      You paste code into an AI tool. It compiles. It also ignores every convention you have.
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       4 · The AI ignored every convention you have
+       ================================================================ -->
+  <section class="slide" data-label="04 AI ignored conventions">
+    <div class="slide-num">04</div>
+    <p class="kicker">A familiar moment</p>
+    <h2 class="title">The output compiled. It also ignored <span class="hl">every convention you have.</span></h2>
+
+    <div class="grow"></div>
+
+    <div class="three-col" style="margin-bottom:40px">
+      <div class="card peach">
+        <div class="card-title">Wrong import style</div>
+        <p class="card-body">Relative imports in a project that's been absolute-only for three years.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Wrong naming</div>
+        <p class="card-body"><code style="font-family:var(--mono);font-size:24px;color:var(--peach)">snake_case</code> functions, <code style="font-family:var(--mono);font-size:24px;color:var(--peach)">CamelCase</code> variables, mixed in one file.</p>
+      </div>
+      <div class="card blue">
+        <div class="card-title">Wrong test framework</div>
+        <p class="card-body"><code style="font-family:var(--mono);font-size:24px;color:var(--peach)">unittest</code> classes in a <code style="font-family:var(--mono);font-size:24px;color:var(--peach)">pytest</code> codebase. Async tests written sync.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       5 · Reframe — context problem
+       ================================================================ -->
+  <section class="slide" data-label="05 Not an AI problem">
+    <div class="slide-num">05</div>
+    <p class="kicker">Reframe</p>
+
+    <div class="grow row center">
+      <p class="quote">
+        This isn't an AI problem.<br />
+        It's a <span class="hl">context</span> problem.
+      </p>
+    </div>
+
+    <p class="lead" style="max-width:1500px">
+      The tool doesn't know how you work. Nothing in the prompt told it.
+    </p>
+  </section>
+
+
+  <!-- ================================================================
+       6 · You'd never onboard a human like this
+       ================================================================ -->
+  <section class="slide" data-label="06 Onboarding metaphor">
+    <div class="slide-num">06</div>
+    <p class="kicker">The onboarding parallel</p>
+    <h2 class="title">You would never onboard a human like this.</h2>
+    <p class="lead">No README. No style guide. No walkthrough. Just <em>"here's the repo, start coding."</em></p>
+
+    <div class="grow"></div>
+
+    <div class="two-col">
+      <div class="seebox">
+        <h3>What the AI sees</h3>
+        <div class="row">files/</div>
+        <div class="row">syntax</div>
+        <div class="row">tokens in a window</div>
+        <div class="row">what you typed in the prompt</div>
+      </div>
+      <div class="seebox you">
+        <h3>What you see</h3>
+        <div class="row">conventions</div>
+        <div class="row">the history of every file</div>
+        <div class="row">why <span class="hl">that one module</span> looks weird</div>
+        <div class="row">who to ask when it breaks</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       7 · SECTION DIVIDER — What Context Means
+       ================================================================ -->
+  <section class="slide section-divider no-footer" data-label="07 Section · What Context Means">
+    <div class="bar"></div>
+    <div class="section-num">Section 02 / 06</div>
+    <h2>What context<br />means for a<br />Python project.</h2>
+    <div class="section-meta">
+      Not abstract. Five concrete categories any Python dev recognizes.
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       8 · Five categories  (progressive reveal)
+       ================================================================ -->
+  <section class="slide" data-label="08 Five categories" data-steps="5">
+    <div class="slide-num">08</div>
+    <p class="kicker">Context, broken down</p>
+    <h2 class="title smaller">Context is <span class="hl">five concrete things</span> — and you already enforce all of them.</h2>
+
+    <div class="grow"></div>
+
+    <div class="five-grid" style="margin-bottom: 24px">
+      <div class="card" data-step="1">
+        <div class="card-title">Structure</div>
+        <p class="card-body">Where things live. How modules are organized.</p>
+      </div>
+      <div class="card peach" data-step="2">
+        <div class="card-title">Conventions</div>
+        <p class="card-body">Naming, imports, error handling, typing.</p>
+      </div>
+      <div class="card blue" data-step="3">
+        <div class="card-title">Tooling</div>
+        <p class="card-body"><span style="font-family:var(--mono);font-size:24px;color:var(--peach)">pytest</span>, <span style="font-family:var(--mono);font-size:24px;color:var(--peach)">ruff</span>, <span style="font-family:var(--mono);font-size:24px;color:var(--peach)">uv</span>. The choices you've made.</p>
+      </div>
+      <div class="card deep" data-step="4">
+        <div class="card-title">Domain</div>
+        <p class="card-body">What the app does. The key abstractions.</p>
+      </div>
+      <div class="card" data-step="5">
+        <div class="card-title">"Don't touch"</div>
+        <p class="card-body">Legacy code, workarounds with a reason, the intentional weird.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       9 · Both functions work. Only one passes review.
+       ================================================================ -->
+  <section class="slide" data-label="09 Two functions">
+    <div class="slide-num">09</div>
+    <p class="kicker">A tale of two functions</p>
+    <h2 class="title smaller">Both work. <span class="hl">Only one</span> passes code review.</h2>
+
+    <div class="two-col" style="margin-top:36px">
+      <div>
+        <div class="vs-header bad"><span class="dot"></span>Correct, but contextless</div>
+        <div class="code sm"><span class="c-key">def</span> <span class="c-fn">get_user</span>(user_id):
+    <span class="c-key">try</span>:
+        user = db.query(User).filter(
+            User.id == user_id
+        ).first()
+        <span class="c-key">if</span> user <span class="c-key">is None</span>:
+            <span class="c-key">raise</span> <span class="c-cls">Exception</span>(<span class="c-str">"not found"</span>)
+        <span class="c-key">return</span> {
+            <span class="c-str">"id"</span>: user.id,
+            <span class="c-str">"email"</span>: user.email,
+        }
+    <span class="c-key">except</span> <span class="c-cls">Exception</span> <span class="c-key">as</span> e:
+        <span class="c-key">return</span> {<span class="c-str">"error"</span>: <span class="c-fn">str</span>(e)}</div>
+      </div>
+
+      <div>
+        <div class="vs-header good"><span class="dot"></span>Correct, and in your style</div>
+        <div class="code sm"><span class="c-key">async def</span> <span class="c-fn">get_user</span>(
+    user_id: <span class="c-cls">UUID</span>,
+    db: <span class="c-cls">DBSession</span>,
+) -&gt; <span class="c-cls">UserOut</span>:
+    <span class="c-str">"""Return a single user, or raise."""</span>
+    user = <span class="c-key">await</span> db.<span class="c-fn">get</span>(<span class="c-cls">User</span>, user_id)
+    <span class="c-key">if</span> user <span class="c-key">is None</span>:
+        <span class="c-key">raise</span> <span class="c-cls">UserNotFound</span>(user_id)
+    <span class="c-key">return</span> <span class="c-cls">UserOut</span>.<span class="c-fn">model_validate</span>(user)</div>
+      </div>
+    </div>
+
+    <p class="lead" style="font-size:30px;margin-top:32px">
+      Same behavior. One file ships; the other gets <span class="hl">six comments</span> on the PR.
+    </p>
+  </section>
+
+
+  <!-- ================================================================
+       10 · We document for humans. We skip for AI.
+       ================================================================ -->
+  <section class="slide" data-label="10 Document humans, skip AI">
+    <div class="slide-num">10</div>
+    <p class="kicker">The asymmetry</p>
+
+    <div class="grow row center">
+      <p class="quote">
+        We do this for <span class="hl-peach">people</span>.<br />
+        We skip it for <span class="hl">AI</span>.
+      </p>
+    </div>
+
+    <div class="two-col" style="margin-top: 24px">
+      <div class="card peach">
+        <div class="card-title">For people, we wrote:</div>
+        <p class="card-body">Style guide · CONTRIBUTING.md · 30-min day-one walkthrough · Slack channel for questions</p>
+      </div>
+      <div class="card">
+        <div class="card-title">For the AI, we wrote:</div>
+        <p class="card-body">…the prompt. That's it. Then we got mad it didn't know.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       11 · SECTION DIVIDER — The AI Config Layer
+       ================================================================ -->
+  <section class="slide section-divider no-footer" data-label="11 Section · AI Config Layer">
+    <div class="bar"></div>
+    <div class="section-num">Section 03 / 06</div>
+    <h2>The AI<br />config layer.</h2>
+    <div class="section-meta">
+      Tools that solve the context problem. Files AI assistants actually read.
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       12 · The files AI tools actually read
+       ================================================================ -->
+  <section class="slide" data-label="12 Config files">
+    <div class="slide-num">12</div>
+    <p class="kicker">The four files that matter</p>
+    <h2 class="title smaller">There are <span class="hl">files AI tools actually read</span> — at session start, automatically.</h2>
+
+    <div class="grow"></div>
+
+    <ul class="checklist">
+      <li>
+        <span class="nm">01</span>
+        <div>
+          <strong style="font-family:var(--serif);font-weight:600;font-size:38px">CLAUDE.md</strong>
+          <div style="color:var(--ink-dim);font-size:30px;margin-top:6px">project-level context for Claude Code. Repo root. Plain markdown. Read at session start.</div>
+        </div>
+      </li>
+      <li>
+        <span class="nm">02</span>
+        <div>
+          <strong style="font-family:var(--serif);font-weight:600;font-size:38px">.github/copilot-instructions.md</strong>
+          <div style="color:var(--ink-dim);font-size:30px;margin-top:6px">same idea, for GitHub Copilot.</div>
+        </div>
+      </li>
+      <li>
+        <span class="nm">03</span>
+        <div>
+          <strong style="font-family:var(--serif);font-weight:600;font-size:38px">.cursor/rules/</strong>
+          <div style="color:var(--ink-dim);font-size:30px;margin-top:6px">same idea, for Cursor. Multiple files, scoped by glob.</div>
+        </div>
+      </li>
+      <li>
+        <span class="nm">04</span>
+        <div>
+          <strong style="font-family:var(--serif);font-weight:600;font-size:38px">AGENTS.md</strong>
+          <div style="color:var(--ink-dim);font-size:30px;margin-top:6px">the standardized one. Increasingly cross-tool.</div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+
+  <!-- ================================================================
+       13 · A real CLAUDE.md  (full sample)
+       ================================================================ -->
+  <section class="slide" data-label="13 CLAUDE.md sample">
+    <div class="slide-num">13</div>
+    <p class="kicker">What it actually looks like</p>
+    <h2 class="title smaller">A real <span class="hl">CLAUDE.md</span> for a Python project.</h2>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:32px; margin-top:28px">
+      <div>
+        <div class="filename">CLAUDE.md  ·  repo root</div>
+        <div class="code sm"><span class="c-md-h"># Project: invoice-processor</span>
+
+<span class="c-md-b">## Stack</span>
+Python 3.12, FastAPI, SQLAlchemy 2.0, Postgres
+Tests: pytest + pytest-asyncio
+Package manager: uv
+Linter: ruff
+
+<span class="c-md-b">## Conventions</span>
+- API endpoints return <span class="c-md-code">Pydantic</span> models, never dicts
+- Use <span class="c-md-code">Annotated</span> for dependency injection
+- Async everywhere — no sync DB calls
+- Errors raise from <span class="c-md-code">app/exceptions.py</span>
+- Imports: stdlib → third-party → local</div>
+      </div>
+
+      <div>
+        <div class="filename">CLAUDE.md  (continued)</div>
+        <div class="code sm"><span class="c-md-b">## Testing</span>
+- Fixtures in <span class="c-md-code">conftest.py</span>, never inline
+- <span class="c-md-code">factory_boy</span> for model factories
+- Integration tests hit a real test DB
+- Run: <span class="c-md-code">uv run pytest -x --tb=short</span>
+
+<span class="c-md-b">## Don't</span>
+- Don't use <span class="c-md-code">datetime.now()</span> — use
+  <span class="c-md-code">app.utils.utc_now()</span>
+- Don't add deps without checking
+  <span class="c-md-code">pyproject.toml</span>
+- Don't write raw SQL — use the ORM</div>
+      </div>
+    </div>
+
+    <p class="lead" style="font-size:28px;margin-top:32px;color:var(--ink-faint)">
+      Forty lines of plain markdown. That's the whole trick.
+    </p>
+  </section>
+
+
+  <!-- ================================================================
+       14 · Same prompt, different context
+       ================================================================ -->
+  <section class="slide" data-label="14 Before / after output">
+    <div class="slide-num">14</div>
+    <p class="kicker">Same prompt, different context</p>
+    <h2 class="title smaller">Prompt: <span class="hl">"add an endpoint to list invoices by status."</span></h2>
+
+    <div class="two-col" style="margin-top:32px">
+      <div>
+        <div class="vs-header bad"><span class="dot"></span>Without CLAUDE.md</div>
+        <div class="code sm"><span class="c-deco">@app.route</span>(<span class="c-str">"/invoices"</span>)
+<span class="c-key">def</span> <span class="c-fn">list_invoices</span>():
+    status = request.args.<span class="c-fn">get</span>(<span class="c-str">"status"</span>)
+    rows = db.<span class="c-fn">execute</span>(
+        <span class="c-str">f"SELECT * FROM invoices "</span>
+        <span class="c-str">f"WHERE status = '{status}'"</span>
+    ).<span class="c-fn">fetchall</span>()
+    <span class="c-key">return</span> jsonify([<span class="c-fn">dict</span>(r) <span class="c-key">for</span> r <span class="c-key">in</span> rows])</div>
+        <p style="font-family:var(--sans);font-size:26px;color:var(--ink-faint);margin-top:18px;line-height:1.5">
+          Wrong framework. Sync. Raw SQL. Dict response. SQL injection.
+        </p>
+      </div>
+
+      <div>
+        <div class="vs-header good"><span class="dot"></span>With CLAUDE.md</div>
+        <div class="code sm"><span class="c-deco">@router.get</span>(<span class="c-str">"/invoices"</span>, response_model=<span class="c-fn">list</span>[<span class="c-cls">InvoiceOut</span>])
+<span class="c-key">async def</span> <span class="c-fn">list_invoices</span>(
+    status: <span class="c-cls">InvoiceStatus</span>,
+    db: <span class="c-cls">DBSession</span>,
+) -&gt; <span class="c-fn">list</span>[<span class="c-cls">InvoiceOut</span>]:
+    stmt = <span class="c-fn">select</span>(<span class="c-cls">Invoice</span>).<span class="c-fn">where</span>(
+        <span class="c-cls">Invoice</span>.status == status
+    )
+    rows = (<span class="c-key">await</span> db.<span class="c-fn">execute</span>(stmt)).<span class="c-fn">scalars</span>().<span class="c-fn">all</span>()
+    <span class="c-key">return</span> [<span class="c-cls">InvoiceOut</span>.<span class="c-fn">model_validate</span>(r) <span class="c-key">for</span> r <span class="c-key">in</span> rows]</div>
+        <p style="font-family:var(--sans);font-size:26px;color:var(--ink-faint);margin-top:18px;line-height:1.5">
+          FastAPI. Async. ORM. Pydantic out. Typed. Your style.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       15 · Prompt evolution — bad → spec-driven
+       ================================================================ -->
+  <section class="slide" data-label="15 Prompt evolution" data-steps="3">
+    <div class="slide-num">15</div>
+    <p class="kicker">Spec-driven prompting</p>
+    <h2 class="title smaller">Better prompts <span class="hl">look like specs</span>, not wishes.</h2>
+
+    <div class="three-col" style="margin-top:36px;align-items:flex-start">
+      <div data-step="1">
+        <div class="vs-header bad"><span class="dot"></span>Wish</div>
+        <div class="code sm">add an endpoint for invoices</div>
+        <p style="font-family:var(--sans);font-size:24px;color:var(--ink-faint);margin-top:18px;line-height:1.5">
+          The AI guesses everything. You'll guess what it guessed.
+        </p>
+      </div>
+      <div data-step="2">
+        <div class="vs-header" style="color:var(--peach)"><span class="dot"></span>Better</div>
+        <div class="code sm">Add a GET /invoices endpoint
+that filters by status. Use
+our FastAPI + SQLAlchemy
+conventions in CLAUDE.md.</div>
+        <p style="font-family:var(--sans);font-size:24px;color:var(--ink-faint);margin-top:18px;line-height:1.5">
+          Names the route, the stack, points to the spec.
+        </p>
+      </div>
+      <div data-step="3">
+        <div class="vs-header good"><span class="dot"></span>Spec-driven</div>
+        <div class="code sm"><span class="c-md-b">## Goal</span>
+List invoices by status.
+
+<span class="c-md-b">## Contract</span>
+- GET /invoices?status=...
+- Returns list[<span class="c-md-code">InvoiceOut</span>]
+- 422 on bad status
+
+<span class="c-md-b">## Tests first</span>
+- happy path + 4xx
+- factory_boy fixtures</div>
+        <p style="font-family:var(--sans);font-size:24px;color:var(--ink-faint);margin-top:18px;line-height:1.5">
+          Goal · contract · tests. The AI now has a target.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       16 · Spec-driven workflow
+       ================================================================ -->
+  <section class="slide" data-label="16 Spec-driven workflow" data-steps="4">
+    <div class="slide-num">16</div>
+    <p class="kicker">The loop that works</p>
+    <h2 class="title smaller">Write the spec. <span class="hl">Then the code.</span></h2>
+
+    <ul class="checklist" style="margin-top:32px">
+      <li data-step="1">
+        <span class="nm">01</span>
+        <div>
+          <strong style="font-family:var(--serif);font-weight:600;font-size:38px">Write a one-page spec</strong>
+          <div style="color:var(--ink-dim);font-size:30px;margin-top:6px">Goal, contract, edge cases, tests. Markdown. Five minutes.</div>
+        </div>
+      </li>
+      <li data-step="2">
+        <span class="nm">02</span>
+        <div>
+          <strong style="font-family:var(--serif);font-weight:600;font-size:38px">Ask the AI to critique it</strong>
+          <div style="color:var(--ink-dim);font-size:30px;margin-top:6px">"What's missing? What would break?" — before any code is written.</div>
+        </div>
+      </li>
+      <li data-step="3">
+        <span class="nm">03</span>
+        <div>
+          <strong style="font-family:var(--serif);font-weight:600;font-size:38px">Tests, then implementation</strong>
+          <div style="color:var(--ink-dim);font-size:30px;margin-top:6px">Generate failing tests from the spec. Then ask for code that passes them.</div>
+        </div>
+      </li>
+      <li data-step="4">
+        <span class="nm">04</span>
+        <div>
+          <strong style="font-family:var(--serif);font-weight:600;font-size:38px">Spec lives in the repo</strong>
+          <div style="color:var(--ink-dim);font-size:30px;margin-top:6px">Commit it next to the code. Next session, the AI reads it again.</div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+
+  <!-- ================================================================
+       17 · Skills — reusable instruction bundles
+       ================================================================ -->
+  <section class="slide" data-label="17 Skills">
+    <div class="slide-num">17</div>
+    <p class="kicker">One step further</p>
+    <h2 class="title smaller">Skills are <span class="hl">reusable instruction bundles</span> — for the moves you do over and over.</h2>
+
+    <div class="grow"></div>
+
+    <div class="three-col" style="margin-bottom: 48px">
+      <div class="card peach">
+        <div class="card-title">"Add a new endpoint"</div>
+        <p class="card-body">Router → schema → service → test. Always in that order.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">"Write a migration"</div>
+        <p class="card-body">Alembic autogen → review → write data backfill → smoke test.</p>
+      </div>
+      <div class="card blue">
+        <div class="card-title">"Triage a flaky test"</div>
+        <p class="card-body">Re-run with seed → check for time/order coupling → pin or fix.</p>
+      </div>
+    </div>
+
+    <p class="lead" style="font-size:30px;color:var(--ink-faint)">
+      The CLAUDE.md is the 80/20. Skills are for after.
+    </p>
+  </section>
+
+
+  <!-- ================================================================
+       18 · The key message
+       ================================================================ -->
+  <section class="slide" data-label="18 README the AI reads">
+    <div class="slide-num">18</div>
+    <p class="kicker">The whole idea, in one line</p>
+
+    <div class="grow row center">
+      <p class="quote">
+        It's not magic.<br />
+        It's a <span class="hl">README</span> the AI<br />
+        actually reads.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       19 · SECTION DIVIDER — The Side Effect
+       ================================================================ -->
+  <section class="slide section-divider no-footer" data-label="19 Section · Side Effect">
+    <div class="bar"></div>
+    <div class="section-num">Section 04 / 06</div>
+    <h2>The side effect<br />nobody talks<br />about.</h2>
+    <div class="section-meta">
+      Writing it down for the AI is writing it down. Full stop.
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       20 · One file, two audiences
+       ================================================================ -->
+  <section class="slide" data-label="20 One file two audiences">
+    <div class="slide-num">20</div>
+    <p class="kicker">One file, two audiences</p>
+    <h2 class="title smaller">Writing it for the AI <span class="hl">documents it for humans.</span></h2>
+
+    <div style="display:grid; grid-template-columns: 1.1fr .9fr; gap:48px; margin-top:32px">
+      <div>
+        <div class="filename">.github/copilot-instructions.md</div>
+        <div class="code sm"><span class="c-md-h"># How we write code here</span>
+
+<span class="c-md-b">## Imports</span>
+Group: stdlib, third-party, local. Blank line between.
+Absolute imports only. <span class="c-md-code">from app.x import y</span>, never
+<span class="c-md-code">from .x import y</span>.
+
+<span class="c-md-b">## Errors</span>
+Raise from <span class="c-md-code">app/exceptions.py</span>. Never bare <span class="c-md-code">except</span>.
+HTTP errors are mapped at the boundary, not inline.
+
+<span class="c-md-b">## Tests</span>
+Every endpoint has a happy-path test and a 4xx test.
+Use <span class="c-md-code">factory_boy</span>, not inline objects.
+No <span class="c-md-code">mock.patch</span> on our own modules.
+
+<span class="c-md-b">## When in doubt</span>
+Ask in <span class="c-md-code">#backend-help</span>. We don't bite.</div>
+      </div>
+
+      <div class="stack" style="gap:28px;justify-content:center">
+        <div class="card peach">
+          <div class="card-title">For Copilot</div>
+          <p class="card-body">Read at every completion. Now your tab-complete matches your code review.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">For the new hire</div>
+          <p class="card-body">First file they open on day one. Same content. Different reader.</p>
+        </div>
+        <div class="card blue">
+          <div class="card-title">For future-you</div>
+          <p class="card-body">Six months later, when you've forgotten why imports were absolute.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       21 · Your docs aren't good enough — for either
+       ================================================================ -->
+  <section class="slide" data-label="21 Docs not good enough">
+    <div class="slide-num">21</div>
+    <p class="kicker">The talk beneath the talk</p>
+
+    <div class="grow row center">
+      <p class="quote" style="font-size:84px">
+        Your codebase docs<br />
+        aren't good enough.<br />
+        <span class="hl">Not for the AI.<br />Not for the humans either.</span>
+      </p>
+    </div>
+
+    <p class="lead" style="font-size:30px">
+      The AI just made it obvious. Most projects run on oral tradition: the senior dev knows, nobody else does. That's the bus factor.
+    </p>
+  </section>
+
+
+  <!-- ================================================================
+       22 · SECTION DIVIDER — What Still Breaks
+       ================================================================ -->
+  <section class="slide section-divider no-footer" data-label="22 Section · What Still Breaks">
+    <div class="bar"></div>
+    <div class="section-num">Section 05 / 06</div>
+    <h2>What still<br />breaks.</h2>
+    <div class="section-meta">
+      Honest about the limits. None of this turns AI into a senior dev.
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       23 · Confidently wrong code
+       ================================================================ -->
+  <section class="slide" data-label="23 Still breaks">
+    <div class="slide-num">23</div>
+    <p class="kicker">The honest list</p>
+    <h2 class="title smaller">It will still <span class="hl">confidently write wrong code.</span> Plan for it.</h2>
+
+    <div class="grow"></div>
+
+    <div class="two-col" style="gap:32px; margin-bottom: 32px">
+      <div class="card">
+        <div class="card-title">Context windows aren't infinite</div>
+        <p class="card-body">Large codebases still confuse it. CLAUDE.md is a primer, not the whole repo.</p>
+      </div>
+      <div class="card peach">
+        <div class="card-title">Domain nuance is hard to encode</div>
+        <p class="card-body">"Why this customer is special" is not a markdown bullet.</p>
+      </div>
+      <div class="card blue">
+        <div class="card-title">Plausible-looking wrong code</div>
+        <p class="card-body">It will hallucinate APIs that almost exist. Read the diff. Always.</p>
+      </div>
+      <div class="card deep">
+        <div class="card-title">Config files drift</div>
+        <p class="card-body">Update conventions, forget the file, train on stale patterns. Treat it like code.</p>
+      </div>
+    </div>
+
+    <p class="lead" style="font-size:30px;color:var(--ink-faint);line-height:1.5">
+      The promise isn't <em>“AI writes your app.”</em><br />
+      It's <em>“AI writes the boring parts <span class="hl">correctly</span> instead of <span class="hl">almost correctly</span>.”</em>
+    </p>
+  </section>
+
+
+  <!-- ================================================================
+       24 · SECTION DIVIDER — Three Things To Do Tomorrow
+       ================================================================ -->
+  <section class="slide section-divider no-footer" data-label="24 Section · Three Things">
+    <div class="bar"></div>
+    <div class="section-num">Section 06 / 06</div>
+    <h2>Three things<br />to do tomorrow.</h2>
+    <div class="section-meta">
+      Small. Concrete. Do them on one project, not all of them.
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       25 · Three things  (progressive reveal)
+       ================================================================ -->
+  <section class="slide" data-label="25 Three things list" data-steps="3">
+    <div class="slide-num">25</div>
+    <p class="kicker">Start with one project, one file</p>
+    <h2 class="title smaller">Three moves. <span class="hl">All cheap.</span></h2>
+
+    <div class="three-things">
+      <div class="step" data-step="1">
+        <div class="num">01</div>
+        <div class="body">
+          Add a <span class="hl">CLAUDE.md</span> (or copilot-instructions.md, or cursor rules) to <em>one</em> project.
+        </div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="num">02</div>
+        <div class="body">
+          Write down the conventions you <span class="hl">enforce in code review</span> but never documented.
+        </div>
+      </div>
+      <div class="step" data-step="3">
+        <div class="num">03</div>
+        <div class="body">
+          Notice how much of your project's knowledge <span class="hl">lives only in people's heads.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       26 · OUTRO — Thanks
+       ================================================================ -->
+  <section class="slide outro no-footer" data-label="26 Outro">
+    <div class="brandline" style="display:flex;align-items:center;gap:24px;font-family:var(--mono);color:var(--coral);font-size:26px;letter-spacing:.22em;text-transform:uppercase">
+      <span style="width:80px;height:10px;background:var(--peach);border-radius:5px"></span>
+      <span>The end  ·  Questions?</span>
+    </div>
+
+    <div class="thanks">
+      The best docs<br />
+      you'll write this year<br />
+      <span class="hl">might be for a machine.</span><br />
+      The humans will thank you too.
+    </div>
+
+    <div class="meta" style="align-items:center; gap:48px">
+      <div>
+        <div class="name">Tomas Peluritis  ·  Uncle Data</div>
+        <div style="margin-top:8px">VilniusPy  ·  Vilnius, Lithuania</div>
+        <div style="margin-top:18px;color:var(--coral);font-family:var(--mono);letter-spacing:.12em">uncledata.github.io</div>
+      </div>
+      <div class="qr-card">
+        <div class="qr">
+          <img src="assets/qr.svg" alt="QR code linking to the talk page" />
+        </div>
+        <div class="qr-text">
+          <p class="qr-kicker">Slides &amp; notes</p>
+          <p class="qr-url">uncledata.github.io/talks/<br />context-problem-vilniuspy-2026</p>
+          <p class="qr-meta">Scan or visit. The talk page has the full write-up and the slides linked from there.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+
+<script>
+/* ------------------------------------------------------------------
+   Progressive reveal — replace deck-stage's keydown handler with one
+   that first advances [data-current-step] on slides marked [data-steps],
+   then delegates to deck-stage navigation when the steps are exhausted.
+   ------------------------------------------------------------------ */
+(() => {
+  const stage = document.querySelector('deck-stage');
+  if (!stage) return;
+
+  function reinstall() {
+    if (!stage._onKey) {
+      // Try again on next tick
+      requestAnimationFrame(reinstall);
+      return;
+    }
+    const original = stage._onKey;
+    window.removeEventListener('keydown', original);
+
+    function findActiveSlide() {
+      const slides = Array.from(stage.children).filter(
+        el => el.tagName === 'SECTION' || (el.classList && el.classList.contains('slide'))
+      );
+      // deck-stage marks active via [data-deck-active]
+      return slides.find(s => s.hasAttribute('data-deck-active')) || null;
+    }
+
+    function newHandler(e) {
+      const isForward = (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'ArrowDown');
+      const isBack    = (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'ArrowUp');
+      if ((isForward || isBack) && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const active = findActiveSlide();
+        if (active && active.hasAttribute('data-steps')) {
+          const total = parseInt(active.getAttribute('data-steps'), 10) || 0;
+          const cur = parseInt(active.getAttribute('data-current-step') || '0', 10);
+          if (isForward && cur < total) {
+            active.setAttribute('data-current-step', String(cur + 1));
+            e.preventDefault();
+            return;
+          }
+          if (isBack && cur > 0) {
+            active.setAttribute('data-current-step', String(cur - 1));
+            e.preventDefault();
+            return;
+          }
+        }
+      }
+      original(e);
+    }
+
+    window.addEventListener('keydown', newHandler);
+  }
+
+  // Reset step on slide change
+  stage.addEventListener('slidechange', (e) => {
+    const slide = e.detail.slide;
+    const prev  = e.detail.previousSlide;
+    if (slide && slide.hasAttribute && slide.hasAttribute('data-steps')) {
+      slide.setAttribute('data-current-step', '0');
+    }
+    if (prev && prev.hasAttribute && prev.hasAttribute('data-steps')) {
+      prev.setAttribute('data-current-step', '0');
+    }
+  });
+
+  reinstall();
+})();
+</script>
+
+<!-- React + Babel for the Tweaks panel only -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+
+<div id="tweaks-root"></div>
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "theme": "dark",
+  "accent": "#E8845A",
+  "accentSecondary": "#f5cdb8"
+}/*EDITMODE-END*/;
+
+function TweaksApp(){
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    document.body.classList.toggle('theme-light', t.theme === 'light');
+    document.documentElement.style.setProperty('--coral', t.accent);
+    document.documentElement.style.setProperty('--peach', t.accentSecondary);
+  }, [t.theme, t.accent, t.accentSecondary]);
+
+  return (
+    <TweaksPanel>
+      <TweakSection label="Theme" />
+      <TweakRadio
+        label="Background"
+        value={t.theme}
+        options={['dark', 'light']}
+        onChange={(v) => setTweak('theme', v)}
+      />
+      <TweakSection label="Accents" />
+      <TweakColor
+        label="Coral (emphasis)"
+        value={t.accent}
+        onChange={(v) => setTweak('accent', v)}
+      />
+      <TweakColor
+        label="Peach (bars)"
+        value={t.accentSecondary}
+        onChange={(v) => setTweak('accentSecondary', v)}
+      />
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<TweaksApp />);
+</script>
+
+</body>
+</html>
