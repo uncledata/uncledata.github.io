@@ -6,10 +6,13 @@ export default {
       colors: {
         'bg-light': 'var(--color-bg-light)',
         'bg-dark': 'var(--color-bg-dark)',
+        'surface': 'var(--color-surface)',
+        'text-secondary': 'var(--color-text-secondary)',
         'accent-peach': 'var(--color-accent-peach)',
         'accent-coral': 'var(--color-accent-coral)',
         'accent-coral-deep': 'var(--color-accent-coral-deep)',
         'accent-blue': 'var(--color-accent-blue)',
+        'border-theme': 'var(--color-border)',
       },
       fontFamily: {
         heading: 'var(--font-heading)',
