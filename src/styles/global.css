@@ -3,12 +3,42 @@
 @tailwind utilities;
 
 :root {
+  /* Light mode (default) */
   --color-bg-light: #FBF6F3;
   --color-bg-dark: #1A1A2E;
+  --color-surface: #FFFFFF;
+  --color-text-secondary: #6B7280;
+  --color-accent-peach: #f5cdb8;
+  --color-accent-coral: #C4643C;
+  --color-accent-coral-deep: #C4643C;
+  --color-accent-blue: #3B7DD8;
+  --color-border: #e5e0db;
+  --font-heading: Georgia, serif;
+  --font-body: Calibri, system-ui, sans-serif;
+}
+
+[data-theme="dark"] {
+  --color-bg-light: #1A1A2E;
+  --color-bg-dark: #FBF6F3;
+  --color-surface: #252540;
+  --color-text-secondary: #a8a3a0;
   --color-accent-peach: #f5cdb8;
   --color-accent-coral: #E8845A;
   --color-accent-coral-deep: #C4643C;
   --color-accent-blue: #3B7DD8;
-  --font-heading: Georgia, serif;
-  --font-body: Calibri, system-ui, sans-serif;
+  --color-border: #3a3a55;
+}
+
+html {
+  transition: background-color 0.25s ease;
+}
+
+/* Theme toggle: CSS-driven to prevent JS flash */
+#icon-sun { display: none; }
+[data-theme="dark"] #icon-sun { display: block; }
+[data-theme="dark"] #icon-moon { display: none; }
+
+/* Knob slides right in dark mode */
+[data-theme="dark"] #theme-knob {
+  transform: translateX(1.75rem);
 }
