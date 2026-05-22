@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Your codebase has a context problem. And so does your AI. | Uncle Data"
+  description="When AI writes code that compiles but ignores every convention you have, that's not an AI problem. It's a context problem. VilniusPy 2026."
+>
+
+  <div class="pt-12 pb-4">
+    <a href="/talks" class="font-body text-sm text-bg-dark/40 hover:text-accent-coral transition-colors">&larr; All talks</a>
+  </div>
+
+  <section class="pb-8 max-w-2xl">
+    <p class="font-body text-xs text-bg-dark/40 uppercase tracking-wide mb-2">VilniusPy &middot; May 21, 2026 &middot; Vilnius</p>
+    <h1 class="font-heading text-3xl md:text-4xl text-bg-dark leading-tight mb-6">
+      Your codebase has a context problem. And so does your AI.
+    </h1>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-4">
+      The AI generated code that compiled perfectly. It also ignored every convention you had. Wrong import style, wrong naming, wrong test framework. You got mad at the tool.
+    </p>
+    <p class="font-body text-bg-dark/80 leading-relaxed mb-6">
+      This talk argues that's not an AI problem. It's a context problem. The model had no idea how your project works because nothing in the prompt told it. The fix is not better prompting. It's a file the AI actually reads.
+    </p>
+    <a
+      href="/talks/pdfs/codebase-context-problem-vilnius-py-2026.pdf"
+      class="inline-block bg-accent-coral hover:bg-accent-coral-deep text-white font-body font-semibold px-5 py-2.5 rounded transition-colors text-sm"
+    >
+      Download slides (PDF)
+    </a>
+  </section>
+
+  <div class="max-w-2xl space-y-10 border-t border-accent-peach/40 pt-10 pb-16 font-body text-bg-dark/90 leading-relaxed">
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">A Familiar Moment</h2>
+      <p class="mb-4">The symptoms are specific. Wrong import style: absolute paths where you use relative, or vice versa. Wrong naming: camelCase functions in a snake_case codebase, suffixes nobody in your repo uses. Wrong test framework: unittest classes when the whole repo runs on pytest fixtures. Each one is annoying on its own. Together they mean the AI wrote correct code for some generic Python project that is not yours.</p>
+      <p>The reframe matters: this is the same problem you'd have if you handed a new developer the repo with zero context. No README, no style guide, no walkthrough. Just "here's the repo, start coding." You'd never onboard a human that way. You do it to the AI every session.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">What the AI Sees vs. What You See</h2>
+      <p class="mb-4">When you ask the AI for help, it sees your prompt. That's it. Forty words of context for a codebase with hundreds of thousands of lines. No conventions, no examples, no taste.</p>
+      <p>What you see is five years of tacit knowledge. The CONTRIBUTING.md. The team's preferences. The fight about ORMs from 2022. Every code review you've sat through. The AI starts every session as if none of that exists, because to it, none of it does.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">What Context Means for a Python Project</h2>
+      <p class="mb-4">Context is not abstract. It's five concrete categories any Python developer recognises. Structure: where things live, package boundaries, what goes where. Conventions: naming, imports, formatting, type hints. Tooling: what runs in CI, ruff, mypy, pytest, uv. Domain: vocabulary, invariants, what a "user" actually means in this system. Don't-touch: the legacy modules, the fragile migrations, the wrapper from 2019 that everyone is afraid of.</p>
+      <p>You already enforce all five of these in code review. You've just never written them down.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The AI Config Layer</h2>
+      <p class="mb-4">There are files AI tools actually read, automatically, at session start. CLAUDE.md at the repo root for Claude Code. .github/copilot-instructions.md for GitHub Copilot. .cursor/rules/ for Cursor. AGENTS.md as an emerging cross-tool convention. These are not magic. They are markdown files.</p>
+      <p class="mb-4">A real CLAUDE.md for a Python project covers the stack (Python 3.12, FastAPI, SQLAlchemy async, pytest), conventions (snake_case functions, type hints on every public function, Pydantic for API I/O), testing (one test file per module, pytest fixtures not unittest, factory_boy for builders), and what to avoid (no raw SQL outside migrations, no new sync DB calls). Forty lines of plain markdown. That's the whole trick.</p>
+      <p>Same prompt, different context: without the file, you get Flask, no type hints, an f-string SQL injection, and a raw dict response. With the file, you get FastAPI, async, Pydantic models, and SQLAlchemy. The prompt didn't change. The context did.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Spec-Driven Prompting</h2>
+      <p class="mb-4">Once the context layer is in place, the prompts themselves can get better. A wish is "make a function that processes payments" — you get something that compiles. A spec is "write process_payment(order_id, amount). Returns PaymentResult. Errors: CardDeclined, NetworkError, retry 3x with backoff. Idempotent on order_id. Tests first." You get something reviewable.</p>
+      <p>The loop that works: write a one-page spec with goal, signature, errors, and edge cases. Ask the AI to critique it before writing any code (what's missing? ambiguous? untestable?). Tests first, then the implementation. And the spec lives in the repo, so the next person, human or model, starts with the same context you had.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">Skills: Reusable Instruction Bundles</h2>
+      <p class="mb-4">Beyond the project-level context file, there are skills: reusable instruction bundles for the moves you do over and over. Add a new endpoint (route, schema, ORM query, test, OpenAPI doc, done the same way every time). Write a migration (Alembic revision, forward and backward, idempotent data step, test on a copy). Triage a flaky test (re-run, bisect, isolate fixture, quarantine or fix).</p>
+      <p>The CLAUDE.md is the 80/20. Skills are for after you've got that working.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">The Side Effect Nobody Talks About</h2>
+      <p class="mb-4">Writing context for the AI documents it for humans. A .github/copilot-instructions.md that tells the AI about naming conventions also tells the new hire. A CLAUDE.md that says "no raw SQL outside migrations" is also the answer to the question that comes up in every code review. One file, two audiences.</p>
+      <p>Most projects run on oral tradition: the senior who knows where the bodies are buried, the Slack channel that answers everything, the unwritten rules you only learn by getting a PR rejected. The model can't read the group chat. Neither can the person you hire next month. The AI just made the problem legible.</p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-xl text-bg-dark mb-3">What Still Breaks</h2>
+      <p class="mb-4">None of this turns the AI into a senior developer. Context windows are not infinite, and a 200-page spec doesn't all fit or all get attended to. Domain nuance is hard to encode: "an invoice is paid only after the webhook and the ledger reconcile" lives in someone's head, not a markdown file. The AI will still produce plausible-looking wrong code: it compiles, tests pass, names look right, the semantics are quietly incorrect. And config files drift, so a CLAUDE.md from six months ago might be lying to you.</p>
+      <p>The goal is not "AI writes your app." It's "AI writes the boring parts correctly, instead of almost correctly."</p>
+    </div>
+
+    <div class="border-t border-accent-peach/40 pt-8">
+      <h2 class="font-heading text-xl text-bg-dark mb-4">Key takeaways</h2>
+      <ul class="list-disc list-inside space-y-2 text-bg-dark/80 mb-4">
+        <li>When AI writes bad code, ask what context was missing before blaming the model.</li>
+        <li>CLAUDE.md, .github/copilot-instructions.md, and .cursor/rules/ are files AI tools read automatically at session start.</li>
+        <li>Context is five things: structure, conventions, tooling, domain, don't-touch. You already enforce them. Write them down.</li>
+        <li>Forty lines of plain markdown is enough to change the quality of what the AI produces.</li>
+        <li>Writing it down for the AI documents it for humans. One file, two audiences.</li>
+        <li>Treat the config file like a doc: version it, review it, update it when the codebase changes.</li>
+      </ul>
+      <p class="text-bg-dark/50 italic text-sm">The best docs you write this year might be for a machine. The humans will thank you too.</p>
+    </div>
+
+  </div>
+
+</BaseLayout>
